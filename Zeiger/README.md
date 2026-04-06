@@ -2,8 +2,8 @@
 
 Interactive teaching project for visualizing Fourier analysis with cosine and sine components, window functions, complex coefficients, magnitude spectrum, and phase spectrum.
 
-[![Open in Binder (JupyterLab)](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/david-ackermann/Audio-Engineering-Vertiefung-HSD/HEAD?urlpath=lab/tree/fourier_phasor_notebook.ipynb)
-[![Open as Voila app](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/david-ackermann/Audio-Engineering-Vertiefung-HSD/HEAD?urlpath=voila/render/fourier_phasor_notebook.ipynb)
+[![Open in Binder (JupyterLab)](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/david-ackermann/Audio-Engineering-Vertiefung-HSD/HEAD?urlpath=lab/tree/Zeiger/fourier_phasor_notebook.ipynb)
+[![Open as Voila app](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/david-ackermann/Audio-Engineering-Vertiefung-HSD/HEAD?urlpath=voila/render/Zeiger/fourier_phasor_notebook.ipynb)
 
 ## Files
 
@@ -33,11 +33,13 @@ The notebook uses `%matplotlib widget`, so the figure stays interactive directly
 
 JupyterLab version:
 
-https://mybinder.org/v2/gh/david-ackermann/Audio-Engineering-Vertiefung-HSD/HEAD?urlpath=lab/tree/fourier_phasor_notebook.ipynb
+https://mybinder.org/v2/gh/david-ackermann/Audio-Engineering-Vertiefung-HSD/HEAD?urlpath=lab/tree/Zeiger/fourier_phasor_notebook.ipynb
 
 Voila app version:
 
-https://mybinder.org/v2/gh/david-ackermann/Audio-Engineering-Vertiefung-HSD/HEAD?urlpath=voila/render/fourier_phasor_notebook.ipynb
+https://mybinder.org/v2/gh/david-ackermann/Audio-Engineering-Vertiefung-HSD/HEAD?urlpath=voila/render/Zeiger/fourier_phasor_notebook.ipynb
+
+Binder reads its environment configuration from the repository root, so this project also needs a root-level `binder/requirements.txt` that points to `Zeiger/requirements.txt`.
 
 The first Binder launch can take a while because the environment has to be built once on the server side.
 
