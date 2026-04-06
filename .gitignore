@@ -1,0 +1,8 @@
+.DS_Store
+Thumbs.db
+.vscode/
+.virtual_documents/
+anaconda_projects/
+**/__pycache__/
+**/.ipynb_checkpoints/
+
