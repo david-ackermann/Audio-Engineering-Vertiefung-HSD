@@ -1,42 +1,50 @@
 # Fourier Phasor Explorer
 
-Interactive teaching app for visualizing Fourier analysis with cosine and sine components, window functions, complex coefficients, magnitude spectrum, and phase spectrum.
+Interactive teaching project for visualizing Fourier analysis with cosine and sine components, window functions, complex coefficients, magnitude spectrum, and phase spectrum.
+
+[![Open in Binder (JupyterLab)](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/david-ackermann/Audio-Engineering-Vertiefung-HSD/HEAD?urlpath=lab/tree/fourier_phasor_notebook.ipynb)
+[![Open as Voila app](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/david-ackermann/Audio-Engineering-Vertiefung-HSD/HEAD?urlpath=voila/render/fourier_phasor_notebook.ipynb)
 
 ## Files
 
-- `streamlit_app.py`: browser-based Streamlit app for students
-- `fourier_phasor_interactive.py`: desktop Matplotlib version
-- `requirements.txt`: Python dependencies
+- `fourier_phasor_interactive.py`: main interactive Matplotlib application
+- `fourier_phasor_notebook.ipynb`: Jupyter notebook launcher for the interactive figure
+- `requirements.txt`: Python dependencies for notebook use
 
-## Run locally
+## Fast local workflow
+
+1. Install the dependencies:
 
 ```powershell
-streamlit run streamlit_app.py
+pip install -r requirements.txt
 ```
 
-## Deploy with Streamlit Community Cloud
+2. Start Jupyter:
 
-1. Create a new GitHub repository in the browser.
-2. Upload these files to the repository.
-3. Open Streamlit Community Cloud.
-4. Create a new app from your GitHub repository.
-5. Select `streamlit_app.py` as the entry file.
-6. Share the generated URL with students.
-
-## Suggested structure for future apps
-
-If you want to publish more interactive plots later, you can keep several apps in one repository, for example:
-
-```text
-interactive-plots/
-  requirements.txt
-  fourier/
-    streamlit_app.py
-    fourier_phasor_interactive.py
-  convolution/
-    streamlit_app.py
-  sampling/
-    streamlit_app.py
+```powershell
+jupyter lab
 ```
 
-Then each app can be deployed separately by selecting a different entry file in Streamlit Community Cloud.
+3. Open `fourier_phasor_notebook.ipynb` and run the code cell.
+
+The notebook uses `%matplotlib widget`, so the figure stays interactive directly inside Jupyter.
+
+## Online use for students
+
+JupyterLab version:
+
+https://mybinder.org/v2/gh/david-ackermann/Audio-Engineering-Vertiefung-HSD/HEAD?urlpath=lab/tree/fourier_phasor_notebook.ipynb
+
+Voila app version:
+
+https://mybinder.org/v2/gh/david-ackermann/Audio-Engineering-Vertiefung-HSD/HEAD?urlpath=voila/render/fourier_phasor_notebook.ipynb
+
+The first Binder launch can take a while because the environment has to be built once on the server side.
+
+## Optional: start as a Voila app
+
+```powershell
+voila fourier_phasor_notebook.ipynb
+```
+
+That opens the notebook as an app-like page without editable code cells.

@@ -256,6 +256,7 @@ def compute_display_limits(signal_values, time_values, normalize_by_window, basi
 
 
 def main():
+    plt.close("all")
     full_window_start, full_window_end = full_time_limits()
     time_values = np.linspace(full_window_start, full_window_end, int(T_MAX * FS), endpoint=False)
 
