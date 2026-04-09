@@ -1,4 +1,4 @@
-import numpy as np
+﻿import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import RadioButtons, Slider
 
@@ -6,7 +6,7 @@ from matplotlib.widgets import RadioButtons, Slider
 # -------------------------
 # Parameters
 # -------------------------
-T_MAX = 3.0
+T_MAX = 7.0
 FS = 180
 NORMALIZE_BY_WINDOW = False  # True => window average, False => classical FT on [-T_obs/2, T_obs/2]
 WINDOW_COLOR = "#9bd3a8"
@@ -22,10 +22,12 @@ WINDOW_MODES = ("Rectangular", "Hann", "Hamming")
 
 FREQ_MIN = 0.0
 FREQ_MAX = 7.0
-FINE_FREQS = np.linspace(FREQ_MIN, FREQ_MAX, 801)
-LIMIT_FREQS = np.linspace(FREQ_MIN, FREQ_MAX, 121)
+ANALYSIS_FREQ_MIN = 0.0
+ANALYSIS_FREQ_MAX = 7.0
+DISPLAY_FINE_FREQS = np.linspace(ANALYSIS_FREQ_MIN, ANALYSIS_FREQ_MAX, 1601)
+DISPLAY_LIMIT_FREQS = np.linspace(ANALYSIS_FREQ_MIN, ANALYSIS_FREQ_MAX, 241)
 
-DEFAULT_ANALYSIS_FREQ = 2.0
+DEFAULT_ANALYSIS_FREQ = 0.0
 DEFAULT_SIGNAL_MODE = "Mixed signal"
 DEFAULT_WINDOW_MODE = "Rectangular"
 DEFAULT_SIGNAL_FREQ = 2.0
@@ -260,8 +262,8 @@ def main():
     full_window_start, full_window_end = full_time_limits()
     time_values = np.linspace(full_window_start, full_window_end, int(T_MAX * FS), endpoint=False)
 
-    basis_limit = np.exp(-1j * 2.0 * np.pi * LIMIT_FREQS[:, None] * time_values[None, :])
-    basis_fine = np.exp(-1j * 2.0 * np.pi * FINE_FREQS[:, None] * time_values[None, :])
+    basis_limit = np.exp(-1j * 2.0 * np.pi * DISPLAY_LIMIT_FREQS[:, None] * time_values[None, :])
+    basis_fine = np.exp(-1j * 2.0 * np.pi * DISPLAY_FINE_FREQS[:, None] * time_values[None, :])
 
     initial_signal, initial_label = build_selectable_signal(
         time_values, DEFAULT_SIGNAL_MODE, DEFAULT_SIGNAL_FREQ
@@ -330,7 +332,7 @@ def main():
     ax_real_time.set_xlim(*observed_limits(DEFAULT_OBS_DURATION))
     ax_real_time.set_ylim(-signal_limit, signal_limit)
     ax_real_time.grid(alpha=0.25)
-    ax_real_time.set_title("1a. Time domain: x(t), w(t), and cos(2pi f t)", pad=10)
+    ax_real_time.set_title("Time domain: x(t), w(t), and cos(2pi f t)", pad=10)
     ax_real_time.set_ylabel("Amplitude")
     ax_real_time.tick_params(axis="x", labelbottom=False)
     default_window_start, default_window_end = observed_limits(DEFAULT_OBS_DURATION)
@@ -349,7 +351,7 @@ def main():
     ax_real_prod.set_ylim(-state["cache"]["product_limit"], state["cache"]["product_limit"])
     real_integral_ax.set_ylim(-state["cache"]["real_integral_limit"], state["cache"]["real_integral_limit"])
     ax_real_prod.grid(alpha=0.25)
-    ax_real_prod.set_title("1b. Windowed product and integral value", pad=10)
+    ax_real_prod.set_title("Windowed product and integral value", pad=10)
     ax_real_prod.set_xlabel("Time t [s]")
     ax_real_prod.set_ylabel(r"$x(t)w(t)\cos(2\pi f t)$", color="tab:blue")
     real_integral_ax.set_ylabel("Real-part integral value", color="tab:blue")
@@ -369,7 +371,7 @@ def main():
     ax_imag_time.set_xlim(*observed_limits(DEFAULT_OBS_DURATION))
     ax_imag_time.set_ylim(-signal_limit, signal_limit)
     ax_imag_time.grid(alpha=0.25)
-    ax_imag_time.set_title("2a. Time domain: x(t), w(t), and -sin(2pi f t)", pad=10)
+    ax_imag_time.set_title("Time domain: x(t), w(t), and -sin(2pi f t)", pad=10)
     ax_imag_time.tick_params(axis="x", labelbottom=False)
     obs_line_imag_time_left = ax_imag_time.axvline(default_window_start, color="0.55", lw=1.1, ls=":")
     obs_line_imag_time_right = ax_imag_time.axvline(default_window_end, color="0.55", lw=1.1, ls=":")
@@ -386,7 +388,7 @@ def main():
     ax_imag_prod.set_ylim(-state["cache"]["product_limit"], state["cache"]["product_limit"])
     imag_integral_ax.set_ylim(-state["cache"]["imag_integral_limit"], state["cache"]["imag_integral_limit"])
     ax_imag_prod.grid(alpha=0.25)
-    ax_imag_prod.set_title("2b. Windowed product and integral value", pad=10)
+    ax_imag_prod.set_title("Windowed product and integral value", pad=10)
     ax_imag_prod.set_xlabel("Time t [s]")
     ax_imag_prod.set_ylabel(r"$x(t)w(t)(-\sin(2\pi f t))$", color="tab:orange")
     imag_integral_ax.set_ylabel("Imaginary-part integral value", color="tab:orange")
@@ -412,40 +414,40 @@ def main():
     ax_complex.grid(alpha=0.22)
     ax_complex.set_xlabel(r"Re$\{X_T(f)\}$")
     ax_complex.set_ylabel(r"Im$\{X_T(f)\}$")
-    ax_complex.set_title("3. Complex coefficient from both integral values", pad=10)
+    ax_complex.set_title("Complex coefficient from both integral values", pad=10)
 
     complex_pos = ax_complex.get_position()
 
     # -------------------------
     # 4a) Magnitude spectrum
     # -------------------------
-    magnitude_line, = ax_magnitude.plot(FINE_FREQS, state["cache"]["spectrum_fine"], color="0.25", lw=2.0)
+    magnitude_line, = ax_magnitude.plot(DISPLAY_FINE_FREQS, state["cache"]["spectrum_fine"], color="0.25", lw=2.0)
     magnitude_freq_line = ax_magnitude.axvline(DEFAULT_ANALYSIS_FREQ, color="tab:blue", lw=1.5, alpha=0.85)
     magnitude_marker, = ax_magnitude.plot([], [], "o", color="crimson", ms=8)
 
     ax_magnitude.axhline(0.0, color="0.75", lw=0.9)
-    ax_magnitude.set_xlim(FREQ_MIN, FREQ_MAX)
+    ax_magnitude.set_xlim(ANALYSIS_FREQ_MIN, ANALYSIS_FREQ_MAX)
     ax_magnitude.set_ylim(0.0, state["display_cache"]["spectrum_limit"])
     ax_magnitude.grid(alpha=0.25)
     ax_magnitude.set_ylabel(r"$|X_T(f)|$")
-    ax_magnitude.set_title("4a. Magnitude spectrum", pad=10)
+    ax_magnitude.set_title("Magnitude spectrum", pad=10)
     ax_magnitude.tick_params(axis="x", labelbottom=False)
 
     # -------------------------
     # 4b) Phase spectrum
     # -------------------------
-    phase_line, = ax_phase.plot(FINE_FREQS, state["cache"]["phase_fine"], color="0.45", lw=1.9)
+    phase_line, = ax_phase.plot(DISPLAY_FINE_FREQS, state["cache"]["phase_fine"], color="0.45", lw=1.9)
     phase_freq_line = ax_phase.axvline(DEFAULT_ANALYSIS_FREQ, color="tab:blue", lw=1.5, alpha=0.85)
     phase_marker, = ax_phase.plot([], [], "o", color="crimson", ms=8)
 
     ax_phase.axhline(0.0, color="0.75", lw=0.9)
-    ax_phase.set_xlim(FREQ_MIN, FREQ_MAX)
+    ax_phase.set_xlim(ANALYSIS_FREQ_MIN, ANALYSIS_FREQ_MAX)
     ax_phase.set_ylim(-190.0, 190.0)
     ax_phase.set_yticks([-180, -90, 0, 90, 180])
     ax_phase.grid(alpha=0.25)
     ax_phase.set_xlabel("Frequency f [Hz]")
     ax_phase.set_ylabel("Phase [deg]")
-    ax_phase.set_title("4b. Phase spectrum", pad=10)
+    ax_phase.set_title("Phase spectrum", pad=10)
 
     result_box = fig.text(
         complex_pos.x0,
@@ -498,7 +500,7 @@ def main():
         bbox=dict(facecolor="white", alpha=0.90, edgecolor="0.82"),
     )
 
-    duration_slider_ax = fig.add_axes([0.31, 0.120, 0.55, 0.030])
+    duration_slider_ax = fig.add_axes([0.31, 0.040, 0.55, 0.030])
     obs_duration_slider = Slider(
         ax=duration_slider_ax,
         label="",
@@ -508,7 +510,7 @@ def main():
         valstep=SLIDER_STEP,
         color="tab:blue",
     )
-    fig.text(0.900, 0.136, "Observation duration T_obs [s]", ha="left", va="center", fontsize=10)
+    fig.text(0.900, 0.056, "Observation duration T_obs [s]", ha="left", va="center", fontsize=10)
 
     signal_slider_ax = fig.add_axes([0.31, 0.080, 0.55, 0.030])
     signal_freq_slider = Slider(
@@ -522,17 +524,17 @@ def main():
     )
     fig.text(0.900, 0.096, "Signal frequency f_x [Hz]", ha="left", va="center", fontsize=10)
 
-    analysis_slider_ax = fig.add_axes([0.31, 0.040, 0.55, 0.030])
+    analysis_slider_ax = fig.add_axes([0.31, 0.120, 0.55, 0.030])
     analysis_freq_slider = Slider(
         ax=analysis_slider_ax,
         label="",
-        valmin=FREQ_MIN,
-        valmax=FREQ_MAX,
+        valmin=ANALYSIS_FREQ_MIN,
+        valmax=ANALYSIS_FREQ_MAX,
         valinit=DEFAULT_ANALYSIS_FREQ,
         valstep=SLIDER_STEP,
         color="tab:blue",
     )
-    fig.text(0.900, 0.056, "Probe frequency f [Hz]", ha="left", va="center", fontsize=10)
+    fig.text(0.900, 0.136, "Probe frequency f [Hz]", ha="left", va="center", fontsize=10)
 
     real_positive_fill = None
     real_negative_fill = None
@@ -573,8 +575,8 @@ def main():
         ax_complex.set_ylim(-display_cache["complex_limit"], display_cache["complex_limit"])
         ax_magnitude.set_ylim(0.0, display_cache["spectrum_limit"])
 
-        magnitude_line.set_data(FINE_FREQS, cache["spectrum_fine"])
-        phase_line.set_data(FINE_FREQS, cache["phase_fine"])
+        magnitude_line.set_data(DISPLAY_FINE_FREQS, cache["spectrum_fine"])
+        phase_line.set_data(DISPLAY_FINE_FREQS, cache["phase_fine"])
 
         obs_line_real_time_left.set_xdata([window_start, window_start])
         obs_line_real_time_right.set_xdata([window_end, window_end])
@@ -687,7 +689,12 @@ def main():
         phase_marker.set_data([probe_freq], [np.degrees(np.angle(coefficient))])
 
         result_box.set_text(
-            "\n".join(["Result", f"X_T(f) = {fmt_complex(coefficient)}", f"|X_T(f)| = {abs(coefficient):.3f}"])
+            "\n".join([
+                "Result",
+                f"X_T(f) = {fmt_complex(coefficient)}",
+                f"|X_T(f)| = {abs(coefficient):.3f}",
+                "For real x(t): X_T(-f) = X_T^*(f)",
+            ])
         )
 
         fig.canvas.draw_idle()
@@ -743,3 +750,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
