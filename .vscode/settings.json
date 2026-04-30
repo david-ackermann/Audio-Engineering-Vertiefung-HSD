@@ -1,4 +1,7 @@
-{
-    "python-envs.defaultEnvManager": "ms-python.python:conda",
-    "python-envs.defaultPackageManager": "ms-python.python:conda"
+﻿{
+    "python-envs.defaultEnvManager":  "ms-python.python:conda",
+    "python-envs.defaultPackageManager":  "ms-python.python:conda",
+    "python.defaultInterpreterPath":  "C:\\Users\\ackerm_d\\AppData\\Local\\anaconda3\\python.exe",
+    "python.condaPath":  "C:\\Users\\ackerm_d\\AppData\\Local\\anaconda3\\Scripts\\conda.exe",
+    "python.terminal.activateEnvironment":  true
 }

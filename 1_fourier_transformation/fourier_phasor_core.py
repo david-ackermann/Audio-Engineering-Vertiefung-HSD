@@ -78,6 +78,63 @@ def build_selectable_signal(time_values, signal_mode, signal_frequency):
     raise ValueError(f"Unknown signal mode: {signal_mode}")
 
 
+def selectable_signal_components(signal_mode, signal_frequency):
+    if signal_mode == "Mixed signal":
+        return list(SIGNAL_COMPONENTS)
+    if signal_mode == "Cosine":
+        return [("cos", 1.0, signal_frequency, 0.0)]
+    if signal_mode == "Sine":
+        return [("sin", 1.0, signal_frequency, 0.0)]
+    if signal_mode == "Constant":
+        return [("dc", 1.0, 0.0, 0.0)]
+    raise ValueError(f"Unknown signal mode: {signal_mode}")
+
+
+def build_ideal_positive_frequency_spectrum(components):
+    line_spectrum = {}
+    for kind, amplitude, frequency_hz, phase_rad in components:
+        if kind == "cos":
+            coefficient = amplitude * np.exp(1j * phase_rad)
+            if frequency_hz >= 0.0:
+                line_spectrum[frequency_hz] = line_spectrum.get(frequency_hz, 0.0j) + coefficient
+        elif kind == "sin":
+            coefficient = -1j * amplitude * np.exp(1j * phase_rad)
+            if frequency_hz >= 0.0:
+                line_spectrum[frequency_hz] = line_spectrum.get(frequency_hz, 0.0j) + coefficient
+        elif kind == "dc":
+            line_spectrum[0.0] = line_spectrum.get(0.0, 0.0j) + complex(amplitude, 0.0)
+        else:
+            raise ValueError(f"Unknown signal type: {kind}")
+    return line_spectrum
+
+
+def build_ideal_two_sided_spectrum(components):
+    line_spectrum = {}
+    for kind, amplitude, frequency_hz, phase_rad in components:
+        if kind == "cos":
+            positive = 0.5 * amplitude * np.exp(1j * phase_rad)
+            negative = 0.5 * amplitude * np.exp(-1j * phase_rad)
+            line_spectrum[frequency_hz] = line_spectrum.get(frequency_hz, 0.0j) + positive
+            line_spectrum[-frequency_hz] = line_spectrum.get(-frequency_hz, 0.0j) + negative
+        elif kind == "sin":
+            positive = -0.5j * amplitude * np.exp(1j * phase_rad)
+            negative = 0.5j * amplitude * np.exp(-1j * phase_rad)
+            line_spectrum[frequency_hz] = line_spectrum.get(frequency_hz, 0.0j) + positive
+            line_spectrum[-frequency_hz] = line_spectrum.get(-frequency_hz, 0.0j) + negative
+        elif kind == "dc":
+            line_spectrum[0.0] = line_spectrum.get(0.0, 0.0j) + complex(amplitude, 0.0)
+        else:
+            raise ValueError(f"Unknown signal type: {kind}")
+    return line_spectrum
+
+
+def lookup_discrete_spectrum_coefficient(line_spectrum, frequency_hz, atol=1e-9):
+    for line_frequency, coefficient in line_spectrum.items():
+        if np.isclose(line_frequency, frequency_hz, atol=atol):
+            return coefficient
+    return 0.0j
+
+
 def fmt_complex(value):
     sign = "+" if value.imag >= 0 else "-"
     return f"{value.real:+.3f} {sign} j{abs(value.imag):.3f}"
