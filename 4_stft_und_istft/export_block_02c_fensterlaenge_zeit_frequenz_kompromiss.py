@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Optional
 
 import matplotlib
 
@@ -62,6 +63,7 @@ class AnalysisConfig:
     output_subdir: str
     window_length: int
     hop_size: int
+    center_reference_window_length: Optional[int] = None
 
 
 @dataclass(frozen=True)
@@ -91,6 +93,7 @@ LONG_CONFIG = AnalysisConfig(
     output_subdir="02_langes_fenster",
     window_length=128,
     hop_size=HOP_SIZE,
+    center_reference_window_length=SHORT_CONFIG.window_length,
 )
 
 
@@ -129,8 +132,26 @@ def one_sided_amplitude_scaled_coefficients(coefficients: np.ndarray, n_samples:
     return scaled_coefficients
 
 
+def frame_starts_for_config(config: AnalysisConfig) -> np.ndarray:
+    if config.center_reference_window_length is None:
+        return np.arange(0, TOTAL_SAMPLES - config.window_length + 1, config.hop_size)
+
+    reference_length = config.center_reference_window_length
+    reference_starts = np.arange(0, TOTAL_SAMPLES - reference_length + 1, config.hop_size)
+    reference_centers = reference_starts + 0.5 * reference_length
+    return np.rint(reference_centers - 0.5 * config.window_length).astype(int)
+
+
+def extract_signal_block_with_zero_padding(frame_start: int, window_length: int) -> np.ndarray:
+    signal_indices = frame_start + np.arange(window_length)
+    visible_mask = (signal_indices >= 0) & (signal_indices < TOTAL_SAMPLES)
+    block = np.zeros(window_length)
+    block[visible_mask] = SIGNAL_VALUES[signal_indices[visible_mask]]
+    return block
+
+
 def build_analysis_state(config: AnalysisConfig) -> AnalysisState:
-    frame_starts = np.arange(0, TOTAL_SAMPLES - config.window_length + 1, config.hop_size)
+    frame_starts = frame_starts_for_config(config)
     frame_times_s = frame_starts / FS_HZ
     window_duration_s = config.window_length / FS_HZ
     frame_centers_s = frame_times_s + 0.5 * window_duration_s
@@ -144,7 +165,9 @@ def build_analysis_state(config: AnalysisConfig) -> AnalysisState:
     visible_freq_values_hz = freq_values_hz[visible_freq_mask]
     visible_bin_indices = np.arange(len(freq_values_hz))[visible_freq_mask]
 
-    frame_blocks = np.vstack([SIGNAL_VALUES[start : start + config.window_length] for start in frame_starts])
+    frame_blocks = np.vstack(
+        [extract_signal_block_with_zero_padding(int(start), config.window_length) for start in frame_starts]
+    )
     coherent_gain = np.mean(window_values)
     stft_coefficients = np.vstack(
         [
@@ -302,9 +325,12 @@ def draw_previous_windows(ax, state: AnalysisState, previous_frame_indices) -> N
 
 def draw_signal_with_active_segment(ax, state: AnalysisState, active_frame_index: int) -> None:
     frame_start = state.frame_starts[active_frame_index]
-    frame_stop = frame_start + state.config.window_length
-    sample_times_s = TIME_VALUES[frame_start:frame_stop]
-    sample_values = SIGNAL_VALUES[frame_start:frame_stop] * state.window_values
+    local_indices = np.arange(state.config.window_length)
+    signal_indices = frame_start + local_indices
+    visible_mask = (signal_indices >= 0) & (signal_indices < TOTAL_SAMPLES)
+    visible_signal_indices = signal_indices[visible_mask]
+    sample_times_s = visible_signal_indices / FS_HZ
+    sample_values = SIGNAL_VALUES[visible_signal_indices] * state.window_values[visible_mask]
     ax.plot(DENSE_TIME_VALUES, DENSE_SIGNAL_VALUES, color=ORIGINAL_SIGNAL_GREY, lw=2.2, zorder=1)
     draw_discrete_samples(ax, sample_times_s, sample_values)
 

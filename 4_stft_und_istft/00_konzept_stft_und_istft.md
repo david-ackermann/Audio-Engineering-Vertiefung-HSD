@@ -13,6 +13,7 @@ Die Studierenden sollen am Ende verstehen:
 - wie Fensterform, Fensterlaenge und Hop Size das Bild veraendern
 - wie die iSTFT pro Frame in den Zeitbereich zurueckfuehrt
 - warum Rekonstruktion nicht an fehlendem Leakage scheitert, sondern an vollstaendigen Koeffizienten, passender Fensterung und korrektem Overlap-Add haengt
+- wie STFT-Parameter aus einer Fenster-Skizze abgelesen werden koennen
 
 ## Didaktische Rolle im Gesamtaufbau
 
@@ -58,7 +59,7 @@ $$
 STFT:
 
 $$
-X[m,k] = \sum_{n=0}^{N-1} x[n + m H] w[n] e^{-j 2 \pi k n / N}
+X[m,k] = \sum_{\ell=0}^{N-1} x[mH + \ell] w[\ell] e^{-j 2 \pi k \ell / N}
 $$
 
 Spektrogramm:
@@ -70,24 +71,92 @@ $$
 iSTFT pro Frame:
 
 $$
-\tilde{x}_m[n] = (1 / N) \sum_{k=0}^{N-1} X[m,k] e^{j 2 \pi k n / N}
+\tilde{x}_m[\ell] = (1 / N) \sum_{k=0}^{N-1} X[m,k] e^{j 2 \pi k \ell / N}
+$$
+
+Da $X[m,k]$ die DFT des gefensterten Blocks $x[mH+\ell]w[\ell]$ ist, liefert die iDFT zuerst wieder genau diesen lokalen gefensterten Block:
+
+$$
+\tilde{x}_m[\ell] = x[mH+\ell] w[\ell]
+$$
+
+Synthesefenster:
+
+$$
+y_m[\ell] = \tilde{x}_m[\ell] w_s[\ell]
+$$
+
+Bei gleichem Analyse- und Synthesefenster $w_s[\ell]=w[\ell]$ wird jeder lokale Beitrag zweimal gewichtet:
+
+$$
+y_m[\ell] = x[mH+\ell] w^2[\ell]
 $$
 
 Overlap-Add:
 
-$$
-y_m[n] = \tilde{x}_m[n] w_s[n]
-$$
+Der lokale Index $\ell$ eines Frames wird beim Zuruecksetzen in das globale Signal durch
 
 $$
-\hat{x}[n] = \sum_m y_m[n - m H]
+\ell = n - mH
 $$
 
-Im normierten Fall kann die Rekonstruktion als Overlap-Add mit lokaler Fensterkorrektur gelesen werden:
+ersetzt. Die rohe Overlap-Add-Summe ist deshalb:
+
+$$
+s[n]
+=
+\sum_m y_m[n-mH]
+$$
+
+Mit dem Synthesefenster ausgeschrieben ist das:
+
+$$
+s[n]
+=
+\sum_m \tilde{x}_m[n-mH]\,w[n-mH]
+$$
+
+Diese Gleichung ist die allgemeinere Schreibweise fuer die rohe Overlap-Add-Summe. Erst wenn man einsetzt, dass die iDFT den analysierten, bereits gefensterten Block zurueckliefert,
+
+$$
+\tilde{x}_m[n-mH]
+=
+x[n]\,w[n-mH],
+$$
+
+erhaelt man fuer einen einzelnen Frame-Beitrag:
+
+$$
+y_m[n-mH]
+=
+x[n] w^2[n-mH]
+$$
+
+Damit folgt fuer die rohe Summe:
+
+$$
+s[n] = x[n] \sum_m w^2[n-mH]
+$$
+
+Diese zweite Form ist also keine neue Definition von $s[n]$, sondern nur die vereinfachte Form nach dem Einsetzen von $\tilde{x}_m[n-mH]=x[n]w[n-mH]$.
+
+Das globale Fenstergewicht ist:
+
+$$
+a[n] = \sum_m w^2[n-mH]
+$$
+
+Im normierten Fall kann die Rekonstruktion als Overlap-Add mit sampleweiser Fensterkorrektur gelesen werden:
 
 $$
 x_{\mathrm{rec}}[n] =
-\frac{\sum_m \tilde{x}_m[n-mH] w[n-mH]}{\sum_m w^2[n-mH]}
+\frac{\sum_m \tilde{x}_m[n-mH] w[n-mH]}{a[n]}
+$$
+
+Also kurz:
+
+$$
+x_{\mathrm{rec}}[n] = \frac{s[n]}{a[n]}
 $$
 
 ## Didaktischer roter Faden
@@ -102,6 +171,7 @@ $$
 8. Block 2D: Hop Size als Dichte der Zeitabtastung
 9. Block 3A: iSTFT als Rueckweg pro Frame
 10. Block 3B: Zero Padding, Overlap-Add und Rekonstruktion des gesamten Signals
+11. Block 4: Hausaufgaben zu STFT-Parametern, Leakage und iSTFT
 
 ## Block 1: Leakage und Fenstervergleich
 
@@ -158,10 +228,228 @@ Die Antwort sollte nicht mit dem Spektrogramm beginnen, sondern mit den vollstae
 - Leakage verteilt Energie im Frame-Spektrum, zerstoert aber nicht automatisch die Information
 - fuer die globale Rekonstruktion muessen Fenster, Hop Size und Normierung zusammenpassen
 
+### Herleitung der iSTFT
+
+Fuer die Herleitung werden zwei Indizes getrennt:
+
+- $\ell$ ist der lokale Index innerhalb eines Frames, also $\ell=0,\ldots,N-1$
+- $n$ ist der globale Sample-Index im Gesamtsignal
+
+Frame $m$ beginnt bei:
+
+$$
+n_m = mH
+$$
+
+Der lokale Index $\ell$ eines Frames entspricht global:
+
+$$
+n = mH + \ell
+$$
+
+Der Ausgangspunkt ist die STFT eines lokalen Frames:
+
+$$
+X[m,k]
+=
+\sum_{\ell=0}^{N-1}
+x[mH+\ell]\,w[\ell]\,
+e^{-j2\pi k\ell/N}
+$$
+
+Hier ist $m$ der Frame-Index, $H$ die Hop Size, $N$ die DFT-Laenge und $w[\ell]$ das Analysefenster. Der lokale Analyseblock ist:
+
+$$
+x_m[\ell] = x[mH+\ell]\,w[\ell]
+$$
+
+Die iDFT fuehrt diesen Frame wieder in den lokalen Zeitbereich zurueck:
+
+$$
+\tilde{x}_m[\ell]
+=
+\frac{1}{N}
+\sum_{k=0}^{N-1}
+X[m,k]\,
+e^{j2\pi k\ell/N}
+$$
+
+Da $X[m,k]$ die DFT des gefensterten Blocks war, gilt:
+
+$$
+\tilde{x}_m[\ell] = x[mH+\ell]\,w[\ell]
+$$
+
+Didaktisch wichtig: Die iDFT liefert noch nicht den ungefensterten Originalblock, sondern den lokal gefensterten Block.
+
+Wenn fuer die Synthese wieder dasselbe Fenster verwendet wird, entsteht:
+
+$$
+y_m[\ell] = \tilde{x}_m[\ell]\,w[\ell]
+$$
+
+Damit folgt:
+
+$$
+y_m[\ell] = x[mH+\ell]\,w^2[\ell]
+$$
+
+Das Quadrat entsteht also nicht durch die Fouriertransformation selbst, sondern durch die Kombination aus Analysefenster und Synthesefenster.
+
+Anschliessend wird jeder lokale Beitrag zurueck an seine globale Position $mH$ geschoben. Fuer ein globales Sample $n$ ist der dazugehoerige lokale Index im Frame $m$:
+
+$$
+\ell = n - mH
+$$
+
+Der Beitrag von Frame $m$ an der globalen Stelle $n$ ist also:
+
+$$
+y_m[n-mH]
+=
+\tilde{x}_m[n-mH]\,w[n-mH]
+$$
+
+Jetzt werden alle Frames addiert, die an der globalen Stelle $n$ einen gueltigen lokalen Index $\ell=n-mH$ besitzen:
+
+$$
+s[n]
+=
+\sum_m y_m[n-mH]
+$$
+
+Mit dem Synthesefenster ausgeschrieben:
+
+$$
+s[n]
+=
+\sum_m \tilde{x}_m[n-mH]\,w[n-mH]
+$$
+
+Das ist die direkte Overlap-Add-Schreibweise: iDFT-Block an die globale Position setzen, Synthesefenster anwenden und alles addieren.
+
+Wenn man nun ausnutzt, dass
+
+$$
+\tilde{x}_m[n-mH]
+=
+x[n]\,w[n-mH],
+$$
+
+folgt fuer jeden Frame-Beitrag:
+
+$$
+y_m[n-mH]
+=
+x[n]\,w^2[n-mH]
+$$
+
+Damit steckt im rohen Overlap-Add-Signal noch das globale Gesamtgewicht aller ueberlappenden Fenster:
+
+$$
+s[n]
+=
+x[n]\sum_m w^2[n-mH]
+$$
+
+Diese Form mit $x[n]$ ist also die vereinfachte Form der vorherigen Summe mit $\tilde{x}_m$. Sie zeigt besonders klar, warum nach dem Overlap-Add noch durch das Fenstergewicht geteilt werden muss.
+
+### Fenstergewicht
+
+Das globale Fenstergewicht ist:
+
+$$
+a[n]
+=
+\sum_m w^2[n-mH]
+$$
+
+Dieses Gewicht beschreibt, wie stark das Sample $x[n]$ nach Analysefensterung, Synthesefensterung und Overlap-Add insgesamt skaliert wurde.
+
+Anschaulich:
+
+- liegt ein Sample nur in einem Fenster, bekommt es nur dessen lokales Gewicht
+- liegt es in mehreren ueberlappenden Fenstern, addieren sich die Fenstergewichte
+- am Signalrand ist das Gewicht ohne Zero Padding oft kleiner
+- im inneren Bereich kann das Gewicht konstant sein, wenn Fensterform und Hop Size passend gewaehlt sind
+
+Die normierte Rekonstruktion lautet deshalb:
+
+$$
+x_{\mathrm{rec}}[n]
+=
+\frac{s[n]}{a[n]}
+$$
+
+Voll ausgeschrieben:
+
+$$
+x_{\mathrm{rec}}[n]
+=
+\frac{
+\sum_m \tilde{x}_m[n-mH]\,w[n-mH]
+}{
+a[n]
+}
+$$
+
+Der zentrale Satz fuer die Folien:
+
+> Die iSTFT setzt nicht einfach lokale iDFT-Bloecke zusammen. Sie setzt jeden lokalen Block $y_m[\ell]$ an seine globale Position $n=mH+\ell$, addiert die ueberlappenden Beitraege zu $s[n]$ und korrigiert danach durch das globale Fenstergewicht $a[n]$. Dieses Fenstergewicht haengt nur von Fensterform, Fensterlaenge und Hop Size ab, nicht vom Signal.
+
 ### Unterbloecke
 
 - `3A`: ein einzelner Frame wird per iDFT in einen lokalen Zeitblock zurueckgefuehrt
 - `3B`: Zero Padding an den Signalraendern erlaubt eine saubere Overlap-Add-Rekonstruktion des gesamten beobachteten Signals
+
+## Block 4: Hausaufgaben
+
+### Kerngedanke
+
+> Die zentralen STFT-Parameter sollen nicht nur aus Formeln, sondern auch aus Skizzen und Signalbeobachtungen abgelesen werden koennen.
+
+Die Hausaufgaben sichern die Begriffe aus der Vorlesung:
+
+- Fensterlaenge \(N\)
+- Hop Size \(H\)
+- Frame-Start \(n_m=mH\)
+- Ueberlappung \(N-H\)
+- Frequenzraster \(\Delta f=f_s/N\)
+- Rekonstruktion ueber \(s[n]/a[n]\)
+
+### Aufgabenreihe
+
+Die Aufgaben sind als Selbstlernphase mit Studierendenfassung und Erwartungshorizont angelegt:
+
+- `Aufgabe 1`: Frequenzraster eines Audio-Analyzers, \(\Delta f\), \(\Delta\Omega\), \(f_k\) und einseitiger Frequenzbereich
+- `Aufgabe 2`: STFT-Fenster auf der \(n\)-Achse einzeichnen, \(n_m=mH\), Endindizes und Spaltendichte
+- `Aufgabe 3`: STFT-Parameter aus einer Hann-Fenster-Skizze rueckwaerts bestimmen
+- `Aufgabe 4`: lokaler Analyseblock eines Klicks, globaler Index \(n_c\), lokaler Fensterindex und breitbandiges STFT-Spektrum
+- `Aufgabe 5`: STFT-Parameter fuer typische Audioanwendungen auswaehlen und begruenden
+
+Zentrale Beziehungen fuer die Aufgaben sind:
+
+$$
+n_m = mH
+$$
+
+$$
+\text{Ueberlappung in Samples} = N-H
+$$
+
+$$
+\text{Ueberlappung in Prozent}
+=
+\frac{N-H}{N}\cdot 100\,\%
+$$
+
+$$
+\Delta f = \frac{f_s}{N}
+$$
+
+$$
+\Omega_k = \frac{2\pi k}{N}
+$$
 
 ## Zeitplan fuer 120 Minuten
 
@@ -176,7 +464,7 @@ Die Antwort sollte nicht mit dem Spektrogramm beginnen, sondern mit den vollstae
 | 78-92 min | Block 2C | kurzes gegen langes Fenster | Zeit-Frequenz-Kompromiss ueber $N$ | Aufloesung differenzieren |
 | 92-102 min | Block 2D | Hop Size und Zeitabtastung | gleiche Bins, andere Frame-Dichte | Hop vom Frequenzraster trennen |
 | 102-112 min | Block 3A | iSTFT als Rueckweg pro Frame | iDFT eines einzelnen Frames | Analyse und Synthese verbinden |
-| 112-120 min | Block 3B | Zero Padding, Fenstersumme, Rekonstruktion | $\hat{x}[n] = \sum_m y_m[n - m H]$ | Rekonstruktionsbedingung sichern |
+| 112-120 min | Block 3B | Zero Padding, Fenstersumme, Rekonstruktion | $x_{\mathrm{rec}}[n] = s[n] / a[n]$ | Rekonstruktionsbedingung sichern |
 
 ## Typische Verstaendnishuerden
 
@@ -215,3 +503,4 @@ Die Antwort sollte nicht mit dem Spektrogramm beginnen, sondern mit den vollstae
 - `03_istft_und_overlap_add`
 - `03_istft_und_overlap_add/03A_istft_rueckweg_pro_frame`
 - `03_istft_und_overlap_add/03B_zero_padding_rekonstruktion`
+- `04_hausaufgaben`

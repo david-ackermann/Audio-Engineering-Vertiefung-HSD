@@ -58,7 +58,10 @@ FRAME_STOPS_S = FRAME_TIMES_S + WINDOW_DURATION_S
 
 TIME_VALUES = np.arange(TOTAL_SAMPLES) / FS_HZ
 DENSE_TIME_VALUES = np.linspace(0.0, (TOTAL_SAMPLES - 1) / FS_HZ, 4000)
+SAMPLE_INDICES = np.arange(TOTAL_SAMPLES)
+DENSE_SAMPLE_INDICES = DENSE_TIME_VALUES * FS_HZ
 LOCAL_TIME_VALUES = np.arange(WINDOW_LENGTH) / FS_HZ
+LOCAL_SAMPLE_INDICES = np.arange(WINDOW_LENGTH)
 WINDOW_VALUES = np.hanning(WINDOW_LENGTH)
 WINDOW_SAMPLE_POSITIONS_S = np.arange(WINDOW_LENGTH) / FS_HZ
 COHERENT_GAIN = np.mean(WINDOW_VALUES)
@@ -66,6 +69,7 @@ COHERENT_GAIN = np.mean(WINDOW_VALUES)
 FREQ_VALUES_HZ = np.fft.rfftfreq(WINDOW_LENGTH, d=1.0 / FS_HZ)
 VISIBLE_FREQ_MASK = FREQ_VALUES_HZ <= VISIBLE_FREQ_MAX_HZ
 VISIBLE_FREQ_VALUES_HZ = FREQ_VALUES_HZ[VISIBLE_FREQ_MASK]
+VISIBLE_BIN_INDICES = np.arange(len(FREQ_VALUES_HZ))[VISIBLE_FREQ_MASK]
 
 TRANSITION_WIDTH_S = 0.18
 LOW_FREQUENCY_HZ = 2.35
@@ -233,6 +237,62 @@ def style_local_block_axis(ax, title: str) -> None:
     ax.tick_params(labelsize=TICK_SIZE)
 
 
+def style_local_sample_axis(ax, title: str) -> None:
+    ax.axhline(0.0, color=GRID_GREY, lw=0.9)
+    ax.set_xlim(LOCAL_SAMPLE_INDICES[0], LOCAL_SAMPLE_INDICES[-1])
+    ax.set_ylim(-SIGNAL_LIMIT, SIGNAL_LIMIT)
+    ax.set_xticks(np.unique(np.r_[np.arange(0, WINDOW_LENGTH, 4), WINDOW_LENGTH - 1]))
+    ax.grid(alpha=0.25)
+    ax.set_axisbelow(True)
+    ax.set_title(title, fontsize=TITLE_SIZE, pad=10)
+    ax.set_xlabel(r"Local frame index $\ell$", fontsize=LABEL_SIZE)
+    ax.set_ylabel("Amplitude", fontsize=LABEL_SIZE)
+    ax.tick_params(labelsize=TICK_SIZE)
+
+
+def sample_index_ticks() -> np.ndarray:
+    return np.unique(np.r_[np.arange(0, TOTAL_SAMPLES, 12), TOTAL_SAMPLES - 1])
+
+
+def style_fixed_sample_axis(ax, title: str, y_label: str = "Amplitude") -> None:
+    ax.axhline(0.0, color=GRID_GREY, lw=0.9)
+    ax.set_xlim(SAMPLE_INDICES[0], SAMPLE_INDICES[-1])
+    ax.set_ylim(-FIXED_DISPLAY_LIMIT, FIXED_DISPLAY_LIMIT)
+    ax.set_xticks(sample_index_ticks())
+    ax.grid(alpha=0.25)
+    ax.set_axisbelow(True)
+    ax.set_title(title, fontsize=TITLE_SIZE, pad=10)
+    ax.set_xlabel(r"Global sample index $n$", fontsize=LABEL_SIZE)
+    ax.set_ylabel(y_label, fontsize=LABEL_SIZE)
+    ax.tick_params(labelsize=TICK_SIZE)
+
+
+def style_signal_sample_axis(ax, title: str, y_label: str = "Amplitude") -> None:
+    ax.axhline(0.0, color=GRID_GREY, lw=0.9)
+    ax.set_xlim(SAMPLE_INDICES[0], SAMPLE_INDICES[-1])
+    ax.set_ylim(-SIGNAL_LIMIT, SIGNAL_LIMIT)
+    ax.set_xticks(sample_index_ticks())
+    ax.grid(alpha=0.25)
+    ax.set_axisbelow(True)
+    ax.set_title(title, fontsize=TITLE_SIZE, pad=10)
+    ax.set_xlabel(r"Global sample index $n$", fontsize=LABEL_SIZE)
+    ax.set_ylabel(y_label, fontsize=LABEL_SIZE)
+    ax.tick_params(labelsize=TICK_SIZE)
+
+
+def style_error_sample_axis(ax, title: str, error_limit: float) -> None:
+    ax.axhline(0.0, color=GRID_GREY, lw=0.9)
+    ax.set_xlim(SAMPLE_INDICES[0], SAMPLE_INDICES[-1])
+    ax.set_ylim(-error_limit, error_limit)
+    ax.set_xticks(sample_index_ticks())
+    ax.grid(alpha=0.25)
+    ax.set_axisbelow(True)
+    ax.set_title(title, fontsize=TITLE_SIZE, pad=10)
+    ax.set_xlabel(r"Global sample index $n$", fontsize=LABEL_SIZE)
+    ax.set_ylabel("Error", fontsize=LABEL_SIZE)
+    ax.tick_params(labelsize=TICK_SIZE)
+
+
 def style_positive_axis(ax, title: str, ymax: float, y_label: str) -> None:
     ax.axhline(0.0, color=GRID_GREY, lw=0.9)
     ax.set_xlim(TIME_VALUES[0], TIME_VALUES[-1])
@@ -259,7 +319,7 @@ def style_error_axis(ax, title: str, error_limit: float) -> None:
     ax.tick_params(labelsize=TICK_SIZE)
 
 
-def style_spectrum_axis(ax, title: str, ymax: float) -> None:
+def style_spectrum_axis(ax, title: str, ymax: float, y_label: str = r"$|X[m,k]|$") -> None:
     ax.axhline(0.0, color=GRID_GREY, lw=0.9)
     ax.set_xlim(0.0, VISIBLE_FREQ_MAX_HZ)
     ax.set_ylim(0.0, 1.0)
@@ -268,7 +328,20 @@ def style_spectrum_axis(ax, title: str, ymax: float) -> None:
     ax.set_axisbelow(True)
     ax.set_title(title, fontsize=TITLE_SIZE, pad=10)
     ax.set_xlabel("Frequency f [Hz]", fontsize=LABEL_SIZE)
-    ax.set_ylabel(r"$|X[m,k]|$", fontsize=LABEL_SIZE)
+    ax.set_ylabel(y_label, fontsize=LABEL_SIZE)
+    ax.tick_params(labelsize=TICK_SIZE)
+
+
+def style_spectrum_bin_axis(ax, title: str, ymax: float, y_label: str = r"$|X[m,k]|$") -> None:
+    ax.axhline(0.0, color=GRID_GREY, lw=0.9)
+    ax.set_xlim(VISIBLE_BIN_INDICES[0], VISIBLE_BIN_INDICES[-1])
+    ax.set_ylim(0.0, 1.0)
+    ax.set_xticks(np.unique(np.r_[np.arange(0, VISIBLE_BIN_INDICES[-1] + 1, 2), VISIBLE_BIN_INDICES[-1]]))
+    ax.grid(alpha=0.25)
+    ax.set_axisbelow(True)
+    ax.set_title(title, fontsize=TITLE_SIZE, pad=10)
+    ax.set_xlabel(r"DFT bin index $k$", fontsize=LABEL_SIZE)
+    ax.set_ylabel(y_label, fontsize=LABEL_SIZE)
     ax.tick_params(labelsize=TICK_SIZE)
 
 
@@ -284,6 +357,14 @@ def draw_window_edges(ax, frame_indices, *, alpha: float = 0.95) -> None:
         ax.axvline(FRAME_STOPS_S[frame_index], color=WINDOW_GREEN, linestyle="--", lw=1.5, alpha=alpha, zorder=2)
 
 
+def draw_window_edges_by_index(ax, frame_indices, *, alpha: float = 0.95) -> None:
+    for frame_index in frame_indices:
+        start = FRAME_STARTS[frame_index]
+        stop = start + WINDOW_LENGTH
+        ax.axvline(start, color=WINDOW_GREEN, linestyle="--", lw=1.5, alpha=alpha, zorder=2)
+        ax.axvline(stop, color=WINDOW_GREEN, linestyle="--", lw=1.5, alpha=alpha, zorder=2)
+
+
 def plot_full_signal_background(ax) -> None:
     ax.plot(DENSE_TIME_VALUES, DENSE_SIGNAL_VALUES, color=ORIGINAL_SIGNAL_GREY, lw=2.0, zorder=1)
 
@@ -295,6 +376,15 @@ def shade_edge_regions(ax) -> None:
         ax.axvspan(0.0, left_edge_stop_s, color=EDGE_WARNING_RED, alpha=0.45, zorder=0)
     if right_edge_start_s < DURATION_S:
         ax.axvspan(right_edge_start_s, DURATION_S, color=EDGE_WARNING_RED, alpha=0.45, zorder=0)
+
+
+def shade_edge_regions_by_index(ax) -> None:
+    left_edge_stop = max(SAMPLE_INDICES[0], VALID_DISPLAY_INDICES[0] - 1)
+    right_edge_start = min(SAMPLE_INDICES[-1], VALID_DISPLAY_INDICES[-1] + 1)
+    if left_edge_stop > SAMPLE_INDICES[0]:
+        ax.axvspan(SAMPLE_INDICES[0], left_edge_stop, color=EDGE_WARNING_RED, alpha=0.45, zorder=0)
+    if right_edge_start < SAMPLE_INDICES[-1]:
+        ax.axvspan(right_edge_start, SAMPLE_INDICES[-1], color=EDGE_WARNING_RED, alpha=0.45, zorder=0)
 
 
 def plot_embedded_block(ax, block_values: np.ndarray, color: str, lw: float, alpha: float) -> None:
@@ -345,6 +435,34 @@ def plot_embedded_signal_sequence(
     )
 
 
+def plot_full_signal_background_by_index(ax) -> None:
+    ax.plot(DENSE_SAMPLE_INDICES, DENSE_SIGNAL_VALUES, color=ORIGINAL_SIGNAL_GREY, lw=2.0, zorder=1)
+
+
+def plot_embedded_block_by_index(ax, block_values: np.ndarray, color: str, lw: float, alpha: float) -> None:
+    active_mask = np.abs(block_values) > 1e-7
+    ax.plot(SAMPLE_INDICES[active_mask], block_values[active_mask], color=color, lw=lw, alpha=alpha, zorder=3)
+
+
+def plot_embedded_signal_sequence_by_index(
+    ax,
+    block_values: np.ndarray,
+    color: str,
+    alpha: float,
+    *,
+    zorder: int = 4,
+) -> None:
+    active_mask = np.isfinite(block_values) & (np.abs(block_values) > 1e-7)
+    draw_sample_stems(
+        ax,
+        SAMPLE_INDICES[active_mask],
+        block_values[active_mask],
+        color=color,
+        alpha=alpha,
+        zorder=zorder,
+    )
+
+
 def export_selected_frame_and_spectrum(frame_index: int, filename: str) -> None:
     fig, axes = create_pair_figure()
     ax_time, ax_spec = axes
@@ -352,120 +470,158 @@ def export_selected_frame_and_spectrum(frame_index: int, filename: str) -> None:
     window_dense = shifted_window_dense(frame_index)
     frame_start = FRAME_STARTS[frame_index]
     frame_stop = frame_start + WINDOW_LENGTH
-    sample_times = TIME_VALUES[frame_start:frame_stop]
+    sample_indices = SAMPLE_INDICES[frame_start:frame_stop]
     windowed_samples = ANALYSIS_BLOCKS[frame_index]
 
-    for frame_time_s in FRAME_TIMES_S:
-        ax_time.axvline(frame_time_s, color=INACTIVE_GREY, lw=1.0, alpha=0.45, zorder=0)
-    draw_window_edges(ax_time, [frame_index])
-    ax_time.plot(DENSE_TIME_VALUES, DENSE_SIGNAL_VALUES, color=ORIGINAL_SIGNAL_GREY, lw=2.0, zorder=1)
-    draw_sample_stems(ax_time, sample_times, windowed_samples)
-    ax_time.plot(DENSE_TIME_VALUES, 0.98 * window_dense, color=WINDOW_GREEN, lw=1.7, zorder=3)
-    style_signal_axis(ax_time, f"Frame m = {frame_index}")
+    for frame_start_index in FRAME_STARTS:
+        ax_time.axvline(frame_start_index, color=INACTIVE_GREY, lw=1.0, alpha=0.45, zorder=0)
+    draw_window_edges_by_index(ax_time, [frame_index])
+    plot_full_signal_background_by_index(ax_time)
+    draw_sample_stems(ax_time, sample_indices, windowed_samples)
+    ax_time.plot(DENSE_SAMPLE_INDICES, 0.98 * window_dense, color=WINDOW_GREEN, lw=1.7, zorder=3)
+    style_signal_sample_axis(ax_time, f"Frame m = {frame_index}")
 
     magnitudes = DISPLAY_MAGNITUDES[frame_index]
-    ax_spec.vlines(VISIBLE_FREQ_VALUES_HZ, 0.0, magnitudes, color=SIGNAL_BLUE, lw=2.4, zorder=2)
-    ax_spec.plot(VISIBLE_FREQ_VALUES_HZ, magnitudes, "o", color=SIGNAL_BLUE, ms=6, zorder=2)
-    style_spectrum_axis(ax_spec, "Frame spectrum", 1.15 * max(0.55, np.max(DISPLAY_MAGNITUDES)))
+    ax_spec.vlines(VISIBLE_BIN_INDICES, 0.0, magnitudes, color=SIGNAL_BLUE, lw=2.4, zorder=2)
+    ax_spec.plot(VISIBLE_BIN_INDICES, magnitudes, "o", color=SIGNAL_BLUE, ms=6, zorder=2)
+    style_spectrum_bin_axis(ax_spec, "Frame spectrum", 1.15 * max(0.55, np.max(DISPLAY_MAGNITUDES)))
     save_figure(fig, filename)
 
 
-def export_inverse_dft_of_one_frame() -> None:
+def export_selected_frame_idft_only(frame_index: int, filename: str) -> None:
+    fig, ax_time = create_time_figure()
+
+    reconstructed_samples = LOCAL_RECONSTRUCTED_BLOCKS[frame_index]
+    draw_sample_stems(ax_time, LOCAL_SAMPLE_INDICES, reconstructed_samples, color=SIGNAL_BLUE, alpha=0.9, zorder=5)
+    style_local_sample_axis(ax_time, rf"iDFT: $\tilde{{x}}_m[\ell]$, frame $m={frame_index}$")
+    save_figure(fig, filename)
+
+
+def export_selected_frame_with_synthesis_window(frame_index: int, filename: str) -> None:
+    fig, ax_time = create_time_figure()
+
+    reconstructed_samples = LOCAL_RECONSTRUCTED_BLOCKS[frame_index]
+    synthesis_samples = SYNTHESIZED_BLOCKS[frame_index]
+
+    draw_sample_stems(ax_time, LOCAL_SAMPLE_INDICES, reconstructed_samples, color=OLD_BLOCK_GREY, alpha=0.75, zorder=3)
+    draw_sample_stems(ax_time, LOCAL_SAMPLE_INDICES, synthesis_samples, color=SIGNAL_BLUE, alpha=0.9, zorder=5)
+    ax_time.plot(LOCAL_SAMPLE_INDICES, 0.98 * WINDOW_VALUES, color=WINDOW_GREEN, lw=1.7, zorder=4)
+    style_local_sample_axis(ax_time, rf"Synthesis block: $y_m[\ell]$, frame $m={frame_index}$")
+    save_figure(fig, filename)
+
+
+def export_target_curve_by_index() -> None:
     fig, ax = create_time_figure()
-    ax.plot(LOCAL_TIME_VALUES, ANALYSIS_BLOCKS[SELECTED_FRAME_INDEX], color=OLD_BLOCK_GREY, lw=2.4, zorder=1)
-    draw_sample_stems(ax, LOCAL_TIME_VALUES, LOCAL_RECONSTRUCTED_BLOCKS[SELECTED_FRAME_INDEX])
-    style_local_block_axis(ax, "iDFT of frame 0 spectrum")
-    save_figure(fig, "05_idft_ergibt_lokalen_block.png")
+    plot_full_signal_background_by_index(ax)
+    style_fixed_sample_axis(ax, r"Target signal $x[n]$")
+    save_figure(fig, "10_zielkurve_x_n.png")
 
 
 def export_shifted_blocks(filename: str, frame_indices, title: str) -> None:
     fig, ax = create_time_figure()
-    plot_full_signal_background(ax)
+    plot_full_signal_background_by_index(ax)
 
     newest_frame_index = frame_indices[-1]
     for frame_index in frame_indices[:-1]:
-        plot_embedded_signal_sequence(ax, SHIFTED_SYNTH_BLOCKS[frame_index], SIGNAL_LIGHT_BLUE, alpha=1.0, zorder=3)
-    plot_embedded_signal_sequence(ax, SHIFTED_SYNTH_BLOCKS[newest_frame_index], SIGNAL_BLUE, alpha=0.9, zorder=5)
+        plot_embedded_signal_sequence_by_index(ax, SHIFTED_SYNTH_BLOCKS[frame_index], SIGNAL_LIGHT_BLUE, alpha=1.0, zorder=3)
+    plot_embedded_signal_sequence_by_index(ax, SHIFTED_SYNTH_BLOCKS[newest_frame_index], SIGNAL_BLUE, alpha=0.9, zorder=5)
 
-    style_fixed_signal_axis(ax, title)
+    style_fixed_sample_axis(ax, title)
     save_figure(fig, filename)
 
 
 def export_all_shifted_blocks() -> None:
     fig, ax = create_time_figure()
-    plot_full_signal_background(ax)
+    plot_full_signal_background_by_index(ax)
     last_frame_index = len(FRAME_STARTS) - 1
     for frame_index in range(len(FRAME_STARTS)):
         color = SIGNAL_BLUE if frame_index == last_frame_index else SIGNAL_LIGHT_BLUE
         alpha = 0.95 if frame_index == last_frame_index else 0.8
         zorder = 5 if frame_index == last_frame_index else 3
-        plot_embedded_signal_sequence(ax, SHIFTED_SYNTH_BLOCKS[frame_index], color, alpha=alpha, zorder=zorder)
-    style_fixed_signal_axis(ax, "All shifted synthesis blocks")
-    save_figure(fig, "09_alle_frames_als_einzelbeitraege.png")
+        plot_embedded_signal_sequence_by_index(ax, SHIFTED_SYNTH_BLOCKS[frame_index], color, alpha=alpha, zorder=zorder)
+    style_fixed_sample_axis(ax, r"Building $s[n]$: all shifted blocks")
+    save_figure(fig, "14_alle_frames_als_einzelbeitraege.png")
 
 
 def export_raw_overlap_add_sum() -> None:
     fig, ax = create_time_figure()
-    plot_full_signal_background(ax)
+    plot_full_signal_background_by_index(ax)
     for frame_index in range(len(FRAME_STARTS)):
-        plot_embedded_signal_sequence(ax, SHIFTED_SYNTH_BLOCKS[frame_index], SIGNAL_LIGHT_BLUE, alpha=0.65, zorder=3)
-    draw_sample_stems(ax, TIME_VALUES, RAW_OVERLAP_ADD, color=SIGNAL_BLUE, alpha=0.9, zorder=5)
-    style_fixed_signal_axis(ax, "Raw overlap-add sum")
-    save_figure(fig, "10_rohe_overlap_add_summe.png")
+        plot_embedded_signal_sequence_by_index(ax, SHIFTED_SYNTH_BLOCKS[frame_index], SIGNAL_LIGHT_BLUE, alpha=0.65, zorder=3)
+    draw_sample_stems(ax, SAMPLE_INDICES, RAW_OVERLAP_ADD, color=SIGNAL_BLUE, alpha=0.9, zorder=5)
+    style_fixed_sample_axis(ax, r"Raw overlap-add sum $s[n]$")
+    save_figure(fig, "15_rohe_overlap_add_summe.png")
 
 
 def export_window_overlap() -> None:
     fig, ax = create_time_figure()
-    ax.plot(DENSE_TIME_VALUES, DENSE_SIGNAL_VALUES, color=ORIGINAL_SIGNAL_GREY, lw=2.0, zorder=1)
+    plot_full_signal_background_by_index(ax)
     for frame_index in range(len(FRAME_STARTS)):
-        plot_embedded_block(ax, SHIFTED_WINDOW_OVERLAP_COMPONENTS[frame_index], WINDOW_GREEN, lw=1.2, alpha=0.95)
-    draw_sample_stems(ax, TIME_VALUES, RAW_OVERLAP_ADD, color=SIGNAL_BLUE, alpha=0.9, zorder=4)
-    ax.plot(TIME_VALUES, WINDOW_OVERLAP, color=WINDOW_GREEN, lw=2.6)
-    style_fixed_signal_axis(ax, "Raw sum and window overlap", "Amplitude / weight")
-    save_figure(fig, "11_fensterueberlappung.png")
+        plot_embedded_block_by_index(ax, SHIFTED_WINDOW_OVERLAP_COMPONENTS[frame_index], WINDOW_GREEN, lw=1.2, alpha=0.95)
+    draw_sample_stems(ax, SAMPLE_INDICES, RAW_OVERLAP_ADD, color=SIGNAL_BLUE, alpha=0.9, zorder=4)
+    ax.plot(SAMPLE_INDICES, WINDOW_OVERLAP, color=WINDOW_GREEN, lw=2.6)
+    style_fixed_sample_axis(ax, r"Raw sum $s[n]$ and $a[n]=\Sigma_m w^2[n-mH]$", "Amplitude / weight")
+    save_figure(fig, "16_fensterueberlappung.png")
 
 
 def export_inverse_window_overlap() -> None:
     fig, ax = create_time_figure()
     clipped_inverse_weight = np.clip(DISPLAY_INVERSE_WINDOW_OVERLAP, 0.0, FIXED_DISPLAY_LIMIT)
-    ax.plot(DENSE_TIME_VALUES, DENSE_SIGNAL_VALUES, color=ORIGINAL_SIGNAL_GREY, lw=2.0, zorder=1)
-    draw_sample_stems(ax, TIME_VALUES, RAW_OVERLAP_ADD, color=SIGNAL_BLUE, alpha=0.9, zorder=4)
-    ax.plot(TIME_VALUES, clipped_inverse_weight, color=WINDOW_GREEN, lw=2.6)
-    style_fixed_signal_axis(ax, "Raw sum and inverse overlap weight", "Amplitude / weight")
-    save_figure(fig, "12_inverse_fensterueberlappung.png")
+    plot_full_signal_background_by_index(ax)
+    draw_sample_stems(ax, SAMPLE_INDICES, RAW_OVERLAP_ADD, color=SIGNAL_BLUE, alpha=0.9, zorder=4)
+    ax.plot(SAMPLE_INDICES, clipped_inverse_weight, color=WINDOW_GREEN, lw=2.6)
+    style_fixed_sample_axis(ax, r"Raw sum $s[n]$ and inverse weight $1/a[n]$", "Amplitude / weight")
+    save_figure(fig, "17_inverse_fensterueberlappung.png")
 
 
 def export_reconstruction_vs_original() -> None:
     fig, ax = create_time_figure()
-    shade_edge_regions(ax)
-    ax.plot(DENSE_TIME_VALUES, DENSE_SIGNAL_VALUES, color=ORIGINAL_SIGNAL_GREY, lw=2.0, zorder=1)
-    draw_sample_stems(ax, TIME_VALUES, RECONSTRUCTED_SIGNAL, color=SIGNAL_BLUE, alpha=0.9, zorder=4)
-    style_fixed_signal_axis(ax, "Reconstruction and original")
-    save_figure(fig, "13_rekonstruktion_gegen_original.png")
+    shade_edge_regions_by_index(ax)
+    plot_full_signal_background_by_index(ax)
+    draw_sample_stems(ax, SAMPLE_INDICES, RECONSTRUCTED_SIGNAL, color=SIGNAL_BLUE, alpha=0.9, zorder=4)
+    style_fixed_sample_axis(ax, r"Reconstruction $\hat{x}[n] = x_{\mathrm{rec}}[n]$")
+    save_figure(fig, "18_rekonstruktion_gegen_original.png")
 
 
 def export_reconstruction_error() -> None:
     fig, ax = create_time_figure()
-    shade_edge_regions(ax)
-    draw_sample_stems(ax, TIME_VALUES, RECONSTRUCTION_ERROR, color=SIGNAL_BLUE, alpha=0.9, zorder=4)
-    style_error_axis(ax, "Reconstruction error", ERROR_DISPLAY_LIMIT)
+    shade_edge_regions_by_index(ax)
+    draw_sample_stems(ax, SAMPLE_INDICES, RECONSTRUCTION_ERROR, color=SIGNAL_BLUE, alpha=0.9, zorder=4)
+    style_error_sample_axis(ax, r"Reconstruction error $\hat{x}[n] - x[n]$", ERROR_DISPLAY_LIMIT)
     ax.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
-    save_figure(fig, "14_rekonstruktionsfehler.png")
+    save_figure(fig, "19_rekonstruktionsfehler.png")
 
 
 def main() -> None:
     clear_output_dir()
     export_selected_frame_and_spectrum(FRAME_SPECTRUM_SEQUENCE[0], "01_frame_0_und_spektrum.png")
-    export_selected_frame_and_spectrum(FRAME_SPECTRUM_SEQUENCE[1], "02_frame_1_und_spektrum.png")
-    export_selected_frame_and_spectrum(FRAME_SPECTRUM_SEQUENCE[2], "03_frame_2_und_spektrum.png")
-    export_selected_frame_and_spectrum(len(FRAME_STARTS) - 1, "04_letztes_frame_und_spektrum.png")
-    export_inverse_dft_of_one_frame()
-    export_shifted_blocks("06_erster_block_an_position_mh.png", [SELECTED_FRAME_INDEX], "First block at position mH")
-    export_shifted_blocks("07_zwei_bloecke_ueberlappen.png", [SELECTED_FRAME_INDEX, SELECTED_FRAME_INDEX + 1], "Two frames overlap")
+    export_selected_frame_idft_only(FRAME_SPECTRUM_SEQUENCE[0], "02_frame_0_idft_ohne_synthesefenster.png")
+    export_selected_frame_with_synthesis_window(
+        FRAME_SPECTRUM_SEQUENCE[0],
+        "03_frame_0_mit_synthesefenster.png",
+    )
+    export_selected_frame_and_spectrum(FRAME_SPECTRUM_SEQUENCE[1], "04_frame_1_und_spektrum.png")
+    export_selected_frame_with_synthesis_window(
+        FRAME_SPECTRUM_SEQUENCE[1],
+        "05_frame_1_mit_synthesefenster.png",
+    )
+    export_selected_frame_and_spectrum(FRAME_SPECTRUM_SEQUENCE[2], "06_frame_2_und_spektrum.png")
+    export_selected_frame_with_synthesis_window(
+        FRAME_SPECTRUM_SEQUENCE[2],
+        "07_frame_2_mit_synthesefenster.png",
+    )
+    export_selected_frame_and_spectrum(len(FRAME_STARTS) - 1, "08_letztes_frame_und_spektrum.png")
+    export_selected_frame_with_synthesis_window(
+        len(FRAME_STARTS) - 1,
+        "09_letztes_frame_mit_synthesefenster.png",
+    )
+    export_target_curve_by_index()
+    export_shifted_blocks("11_erster_block_an_position_mh.png", [SELECTED_FRAME_INDEX], r"Building $s[n]$: first shifted block")
+    export_shifted_blocks("12_zwei_bloecke_ueberlappen.png", [SELECTED_FRAME_INDEX, SELECTED_FRAME_INDEX + 1], r"Building $s[n]$: two shifted blocks")
     export_shifted_blocks(
-        "08_drei_bloecke_ueberlagern_sich.png",
+        "13_drei_bloecke_ueberlagern_sich.png",
         [SELECTED_FRAME_INDEX, SELECTED_FRAME_INDEX + 1, SELECTED_FRAME_INDEX + 2],
-        "Three frames overlap",
+        r"Building $s[n]$: three shifted blocks",
     )
     export_all_shifted_blocks()
     export_raw_overlap_add_sum()

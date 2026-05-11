@@ -175,13 +175,47 @@ def sync_frame_durations(frame_count: int, total_duration_ms: int) -> list[int]:
     return durations
 
 
-def enforce_gif_duration(path: Path, total_duration_ms: int) -> None:
+def animation_frame_indices(block_length: int) -> np.ndarray:
+    frame_count = block_length * FRAMES_PER_SAMPLE
+    frame_progress = np.linspace(0.0, float(block_length), frame_count)
+    frame_indices = np.floor(frame_progress).astype(int)
+    frame_indices[-1] = block_length
+    return frame_indices
+
+
+def sync_frame_durations_for_block(block_length: int) -> list[int]:
+    frame_indices = animation_frame_indices(block_length)
+    sample_interval_ms = int(round(FRAMES_PER_SAMPLE * 1000 / FPS))
+    endpoint_duration_ms = sync_frame_durations(FRAMES_PER_SAMPLE, sample_interval_ms)[0]
+    durations = [0] * len(frame_indices)
+
+    for sample_index in range(block_length):
+        positions = np.flatnonzero(frame_indices == sample_index)
+        target_duration_ms = sample_interval_ms
+        if sample_index == block_length - 1 and np.any(frame_indices == block_length):
+            target_duration_ms -= endpoint_duration_ms
+
+        group_durations = sync_frame_durations(len(positions), target_duration_ms)
+        for position, duration in zip(positions, group_durations):
+            durations[int(position)] = duration
+
+    endpoint_positions = np.flatnonzero(frame_indices == block_length)
+    endpoint_durations = sync_frame_durations(len(endpoint_positions), endpoint_duration_ms)
+    for position, duration in zip(endpoint_positions, endpoint_durations):
+        durations[int(position)] = duration
+
+    return durations
+
+
+def enforce_gif_duration(path: Path, block_length: int) -> None:
     image = Image.open(path)
     frames = [frame.convert("RGBA") for frame in ImageSequence.Iterator(image)]
     if not frames:
         return
 
-    durations = sync_frame_durations(len(frames), total_duration_ms)
+    durations = sync_frame_durations_for_block(block_length)
+    if len(durations) != len(frames):
+        durations = sync_frame_durations(len(frames), sync_total_duration_ms(block_length))
 
     frames[0].save(
         path,
@@ -211,10 +245,11 @@ def visible_dense_segment(
 
 
 def export_basis_components_animation_for(k: int, block_length: int, filename: str) -> None:
-    sample_indices = np.arange(block_length, dtype=float)
+    sample_indices = np.arange(block_length + 1, dtype=float)
     dense_indices = np.linspace(0.0, block_length, 2401)
     frame_count = block_length * FRAMES_PER_SAMPLE
     progress_values = np.linspace(0.0, float(block_length), frame_count)
+    frame_indices = animation_frame_indices(block_length)
 
     cos_dense_values = cosine_dense_for(k, block_length, dense_indices)
     sin_dense_values = minus_sine_dense_for(k, block_length, dense_indices)
@@ -253,7 +288,7 @@ def export_basis_components_animation_for(k: int, block_length: int, filename: s
 
     def draw_state(frame_index: int):
         progress = progress_values[frame_index]
-        sample_count = min(block_length, int(np.floor(progress)) + 1)
+        sample_count = int(frame_indices[frame_index]) + 1
         visible_indices = sample_indices[:sample_count]
         visible_cos_values = cos_sample_values[:sample_count]
         visible_sin_values = sin_sample_values[:sample_count]
@@ -279,7 +314,7 @@ def export_basis_components_animation_for(k: int, block_length: int, filename: s
     )
     gif_path = OUTPUT_DIR / filename
     animation.save(str(gif_path.resolve()), writer=PillowWriter(fps=FPS))
-    enforce_gif_duration(gif_path, sync_total_duration_ms(block_length))
+    enforce_gif_duration(gif_path, block_length)
     plt.close(fig)
 
 

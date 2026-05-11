@@ -1,6 +1,6 @@
 # 4 Leakage, STFT und iSTFT
 
-Vorlesungsordner fuer die vierte Vorlesung. Die Vorlesung beginnt jetzt mit Leakage und Fenstervergleich als Block 1. Danach folgen STFT/Spektrogramm als Block 2 und iSTFT/Overlap-Add als Block 3.
+Vorlesungsordner fuer die vierte Vorlesung. Die Vorlesung beginnt jetzt mit Leakage und Fenstervergleich als Block 1. Danach folgen STFT/Spektrogramm als Block 2, iSTFT/Overlap-Add als Block 3 und ein Hausaufgabenblock als Block 4.
 
 ## Aktueller Stand
 
@@ -17,6 +17,8 @@ Vorhanden sind:
 - `export_block_02d_hop_size_zeitabtastung.py`
 - `export_block_03a_istft_rueckweg_pro_frame.py`
 - `export_block_03b_zero_padding_rekonstruktion.py`
+- `export_block_04_hausaufgaben.py`
+- `04_hausaufgaben.md`
 
 Storyboards liegen unter:
 
@@ -32,6 +34,7 @@ Storyboards liegen unter:
 - `png_storyboards/02_stft_und_spektrogramm/02D_hop_size_zeitabtastung/`
 - `png_storyboards/03_istft_und_overlap_add/03A_istft_rueckweg_pro_frame/`
 - `png_storyboards/03_istft_und_overlap_add/03B_zero_padding_rekonstruktion/`
+- `png_storyboards/04_hausaufgaben/`
 
 ## Inhalt von Vorlesung 4
 
@@ -42,6 +45,7 @@ Storyboards liegen unter:
 - Einfluss von Fensterlaenge und Hop Size
 - iSTFT als Rueckweg pro Frame
 - Overlap-Add und Bedingungen fuer saubere Rekonstruktion
+- Hausaufgaben zu DFT-/STFT-Raster, Fensterpositionen, Klick-Analyse und Parameterwahl
 
 ## Umgesetzte Bloecke
 
@@ -55,6 +59,7 @@ Storyboards liegen unter:
 - `Block 2D`: Einfluss der Hop Size auf die Zeitabtastung
 - `Block 3A`: iSTFT als Rueckweg pro Frame
 - `Block 3B`: Zero Padding und Rekonstruktion des gesamten Signals
+- `Block 4`: Hausaufgaben mit Studierendenfassung, Erwartungshorizont und Skizzen zu Aufgabe 3 und 4
 
 ## Anschluss
 

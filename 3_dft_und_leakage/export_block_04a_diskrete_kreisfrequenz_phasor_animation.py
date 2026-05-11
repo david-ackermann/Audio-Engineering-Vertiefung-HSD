@@ -102,12 +102,13 @@ def n_tick_step(block_length: int) -> int:
     return 4
 
 
-def build_paths(case: dict) -> tuple[Path, Path, Path]:
+def build_paths(case: dict) -> tuple[Path, Path, Path, Path]:
     stem = f"{case['file_index']:02d}_{case['label']}"
     gif_path = OUTPUT_DIR / f"{stem}.gif"
     preview_path = OUTPUT_DIR / f"{stem}_preview.png"
     preview_n0_path = OUTPUT_DIR / f"{stem}_preview_n0.png"
-    return gif_path, preview_path, preview_n0_path
+    endpoint_preview_path = OUTPUT_DIR / f"{stem}_preview_n{case['n']}.png"
+    return gif_path, preview_path, preview_n0_path, endpoint_preview_path
 
 
 def build_endpoint_preview_path(case: dict, endpoint_index: int) -> Path:
@@ -196,7 +197,7 @@ def draw_case(case: dict):
     block_length = case["n"]
     bin_index = case["k"]
     is_dft_bin = case.get("is_dft_bin", True)
-    show_block_endpoint = not is_dft_bin or case.get("show_block_endpoint", False)
+    show_block_endpoint = case.get("show_block_endpoint", True)
     omega_label = case.get("omega_label", omega_fraction_latex(bin_index, block_length))
     complex_title, helix_title, re_label, im_label, helix_re_label, helix_im_label = plot_labels(
         case,
@@ -452,8 +453,8 @@ def crop_gif_to_box(
     )
 
 
-def export_case(case: dict) -> tuple[Path | None, Path, Path]:
-    gif_path, preview_path, preview_n0_path = build_paths(case)
+def export_case(case: dict) -> tuple[Path | None, Path, Path, Path]:
+    gif_path, preview_path, preview_n0_path, endpoint_preview_path = build_paths(case)
     fig, frame_indices, draw_state = draw_case(case)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -466,6 +467,7 @@ def export_case(case: dict) -> tuple[Path | None, Path, Path]:
     fig.canvas.draw()
     fig.canvas.print_png(str(preview_path.resolve()))
     crop_box = crop_png_margins(preview_path)
+    Image.open(preview_path).save(endpoint_preview_path)
 
     if EXPORT_GIFS:
         animation = FuncAnimation(
@@ -481,7 +483,7 @@ def export_case(case: dict) -> tuple[Path | None, Path, Path]:
     else:
         gif_path = None
     plt.close(fig)
-    return gif_path, preview_path, preview_n0_path
+    return gif_path, preview_path, preview_n0_path, endpoint_preview_path
 
 
 def export_endpoint_preview(case: dict, endpoint_index: int) -> Path:
@@ -502,14 +504,13 @@ def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     exported_items = []
     for case in EXPORT_CASES:
-        gif_path, preview_path, preview_n0_path = export_case(case)
-        exported_items.append((case["k"], case["n"], gif_path, preview_path, preview_n0_path))
-
-    k4_case = next(case for case in EXPORT_CASES if case["label"] == "k4_n16")
-    k4_endpoint_path = export_endpoint_preview(k4_case, endpoint_index=16)
+        gif_path, preview_path, preview_n0_path, endpoint_preview_path = export_case(case)
+        exported_items.append(
+            (case["k"], case["n"], gif_path, preview_path, preview_n0_path, endpoint_preview_path)
+        )
 
     print("Saved 4A comparison cases:")
-    for bin_index, block_length, gif_path, preview_path, preview_n0_path in exported_items:
+    for bin_index, block_length, gif_path, preview_path, preview_n0_path, endpoint_preview_path in exported_items:
         print(f"  k = {number_label(bin_index)}, N = {block_length}")
         if gif_path is not None:
             print(f"    GIF: {gif_path}")
@@ -517,7 +518,7 @@ def main():
             print("    GIF: skipped")
         print(f"    PNG: {preview_path}")
         print(f"    PNG n=0: {preview_n0_path}")
-    print(f"  k = 4, N = 16 endpoint PNG: {k4_endpoint_path}")
+        print(f"    PNG n={block_length}: {endpoint_preview_path}")
 
 
 if __name__ == "__main__":
