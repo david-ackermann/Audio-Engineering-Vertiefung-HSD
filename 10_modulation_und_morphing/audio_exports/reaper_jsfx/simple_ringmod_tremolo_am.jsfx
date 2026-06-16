@@ -1,0 +1,283 @@
+desc:Simple AM Ringmod SSB
+
+slider1:PRESET=3<0,5,1{Manual,Ringmodulation,Tremolo,AM,SSB USB,SSB LSB}>preset
+slider2:SIDEBAND=0<0,2,1{Both,USB,LSB}>band switch
+slider3:F_LP_HZ=10000<20,20000,0.01:log>f_TP carrier low-pass cutoff (Hz)
+slider4:F_M_HZ=110<0.01,20000,0.01:log>f_m modulation frequency (Hz, bottom = 0)
+slider5:B=1<0,2,0.01>B bias
+slider6:ALPHA=0.8<0,1,0.01>alpha modulation depth
+slider7:OUT_DB=-6<-24,12,0.1>output (dB)
+
+in_pin:left input
+in_pin:right input
+out_pin:left output
+out_pin:right output
+
+@init
+phase = 0;
+
+STAGES = 6;
+COEF_0 = 0;
+COEF_1 = 16;
+STATE = 64;
+
+i = 0;
+loop(192,
+    i[0] = 0;
+    i += 1;
+);
+
+// 12th-order allpass Hilbert approximation after Wardle/Zolzer:
+// x_0[n] = A_0(-z^2){x[n]}
+// x_90[n] = z^-1 A_1(-z^2){x[n]}
+COEF_0[0] = 0.036681502163648;
+COEF_0[1] = 0.274631759379454;
+COEF_0[2] = 0.561098969787919;
+COEF_0[3] = 0.769741833862266;
+COEF_0[4] = 0.892260818003879;
+COEF_0[5] = 0.962094548378084;
+
+COEF_1[0] = 0.136547624631958;
+COEF_1[1] = 0.423138617436567;
+COEF_1[2] = 0.677540049974162;
+COEF_1[3] = 0.839889624849638;
+COEF_1[4] = 0.931541959963184;
+COEF_1[5] = 0.987816370732897;
+
+qDelayL = 0;
+qDelayR = 0;
+
+// Fourth-order TPT low-pass for the carrier path.
+// Two Butterworth biquad stages make the cutoff much clearer than one pole.
+lp1_ic1L = 0;
+lp1_ic2L = 0;
+lp1_ic1R = 0;
+lp1_ic2R = 0;
+lp2_ic1L = 0;
+lp2_ic2L = 0;
+lp2_ic1R = 0;
+lp2_ic2R = 0;
+
+smooth_ms = 10;
+smooth_a = exp(-1 / (0.001 * smooth_ms * srate));
+smooth_b = 1 - smooth_a;
+
+PRESET_i = floor(PRESET + 0.5);
+PRESET_last = -1;
+SIDEBAND_i = floor(SIDEBAND + 0.5);
+
+F_M_HZ_t = F_M_HZ;
+F_LP_HZ_t = F_LP_HZ;
+B_t = B;
+ALPHA_t = ALPHA;
+OUT_GAIN_t = 10^(OUT_DB / 20);
+
+F_M_HZ_s = F_M_HZ_t;
+F_LP_HZ_s = F_LP_HZ_t;
+B_s = B_t;
+ALPHA_s = ALPHA_t;
+OUT_GAIN_s = OUT_GAIN_t;
+
+function allpass2_chain(input, coef_base, state_base)
+local(stage, section_state, x, y, c)
+(
+    x = input;
+    stage = 0;
+    loop(STAGES,
+        section_state = state_base + 4 * stage;
+        c = coef_base[stage];
+
+        // A_i(z) = (z^-2 - c) / (1 - c*z^-2)
+        // y[n] = c*y[n-2] + x[n-2] - c*x[n]
+        y = c * section_state[3] + section_state[1] - c * x;
+
+        section_state[1] = section_state[0];
+        section_state[0] = x;
+        section_state[3] = section_state[2];
+        section_state[2] = y;
+
+        x = y;
+        stage += 1;
+    );
+    x;
+);
+
+@slider
+PRESET_i = floor(min(max(PRESET, 0), 5) + 0.5);
+
+PRESET_i != PRESET_last ? (
+    PRESET_i == 1 ? (
+        // Ringmodulation preset: y[n] = x[n]*m[n].
+        SIDEBAND = 0;
+        F_M_HZ = 110;
+        F_LP_HZ = 10000;
+        B = 0;
+        ALPHA = 1;
+        OUT_DB = -6;
+    ) : (
+        PRESET_i == 2 ? (
+            // Tremolo preset: y[n] = (1 + alpha*m[n])*x[n], low f_m.
+            SIDEBAND = 0;
+            F_M_HZ = 5;
+            F_LP_HZ = 20000;
+            B = 1;
+            ALPHA = 0.8;
+            OUT_DB = -6;
+        ) : (
+            PRESET_i == 3 ? (
+                // AM preset: y[n] = (1 + alpha*m[n])*x[n].
+                SIDEBAND = 0;
+                F_M_HZ = 110;
+                F_LP_HZ = 10000;
+                B = 1;
+                ALPHA = 0.8;
+                OUT_DB = -6;
+            ) : (
+                PRESET_i == 4 ? (
+                    // SSB USB preset: upper sideband only.
+                    SIDEBAND = 1;
+                    F_M_HZ = 12000;
+                    F_LP_HZ = 10000;
+                    B = 0;
+                    ALPHA = 1;
+                    OUT_DB = -6;
+                ) : (
+                    PRESET_i == 5 ? (
+                        // SSB LSB preset: lower sideband only.
+                        SIDEBAND = 2;
+                        F_M_HZ = 12000;
+                        F_LP_HZ = 10000;
+                        B = 0;
+                        ALPHA = 1;
+                        OUT_DB = -6;
+                    );
+                );
+            );
+        );
+    );
+    PRESET_last = PRESET_i;
+    sliderchange(2 + 4 + 8 + 16 + 32 + 64);
+);
+
+SIDEBAND_i = floor(min(max(SIDEBAND, 0), 2) + 0.5);
+F_M_HZ <= 0.01 ? (
+    F_M_HZ_t = 0;
+) : (
+    F_M_HZ_t = min(max(F_M_HZ, 0.01), min(20000, srate * 0.45));
+);
+F_LP_HZ_t = min(max(F_LP_HZ, 20), min(20000, srate * 0.45));
+B_t = min(max(B, 0), 2);
+ALPHA_t = min(max(ALPHA, 0), 1);
+OUT_GAIN_t = 10^(OUT_DB / 20);
+
+@sample
+F_M_HZ_t == 0 ? (
+    F_M_HZ_s = 0;
+    phase = 0;
+) : (
+    F_M_HZ_s += (F_M_HZ_t - F_M_HZ_s) * smooth_b;
+);
+F_LP_HZ_s += (F_LP_HZ_t - F_LP_HZ_s) * smooth_b;
+B_s += (B_t - B_s) * smooth_b;
+ALPHA_s += (ALPHA_t - ALPHA_s) * smooth_b;
+OUT_GAIN_s += (OUT_GAIN_t - OUT_GAIN_s) * smooth_b;
+
+// Modulator pair.
+// Ringmod/AM use m[n] = sin(...), as in the earlier teaching examples.
+// SSB uses mc[n] = cos(...) and ms[n] = sin(...), so f_m = 0 gives no shift.
+mc = cos(phase);
+ms = sin(phase);
+m = ms;
+phase += 2 * $pi * F_M_HZ_s / srate;
+phase >= 2 * $pi ? phase -= 2 * $pi;
+
+xL = spl0;
+xR = spl1;
+
+// Carrier low-pass before modulation:
+// x_c[n] = fourth_order_lowpass{x[n]} with cutoff F_LP_HZ.
+lp_fc = min(max(F_LP_HZ_s, 20), srate * 0.45);
+g = tan($pi * lp_fc / srate);
+
+// Butterworth stage 1, Q = 0.5411961.
+k_lp = 1 / 0.5411961;
+a1 = 1 / (1 + g * (g + k_lp));
+a2 = g * a1;
+a3 = g * a2;
+
+v3 = xL - lp1_ic2L;
+v1 = a1 * lp1_ic1L + a2 * v3;
+v2 = lp1_ic2L + a2 * lp1_ic1L + a3 * v3;
+lp1_ic1L = 2 * v1 - lp1_ic1L;
+lp1_ic2L = 2 * v2 - lp1_ic2L;
+lp1L = v2;
+
+v3 = xR - lp1_ic2R;
+v1 = a1 * lp1_ic1R + a2 * v3;
+v2 = lp1_ic2R + a2 * lp1_ic1R + a3 * v3;
+lp1_ic1R = 2 * v1 - lp1_ic1R;
+lp1_ic2R = 2 * v2 - lp1_ic2R;
+lp1R = v2;
+
+// Butterworth stage 2, Q = 1.3065630.
+k_lp = 1 / 1.3065630;
+a1 = 1 / (1 + g * (g + k_lp));
+a2 = g * a1;
+a3 = g * a2;
+
+v3 = lp1L - lp2_ic2L;
+v1 = a1 * lp2_ic1L + a2 * v3;
+v2 = lp2_ic2L + a2 * lp2_ic1L + a3 * v3;
+lp2_ic1L = 2 * v1 - lp2_ic1L;
+lp2_ic2L = 2 * v2 - lp2_ic2L;
+carrierL = v2;
+
+v3 = lp1R - lp2_ic2R;
+v1 = a1 * lp2_ic1R + a2 * v3;
+v2 = lp2_ic2R + a2 * lp2_ic1R + a3 * v3;
+lp2_ic1R = 2 * v1 - lp2_ic1R;
+lp2_ic2R = 2 * v2 - lp2_ic2R;
+carrierR = v2;
+
+// Allpass Hilbert pair for the filtered carrier signal.
+// The two outputs are matched in magnitude and approximately 90 degrees apart.
+iL = allpass2_chain(carrierL, COEF_0, STATE + 0);
+iR = allpass2_chain(carrierR, COEF_0, STATE + 32);
+
+qRawL = allpass2_chain(carrierL, COEF_1, STATE + 64);
+qRawR = allpass2_chain(carrierR, COEF_1, STATE + 96);
+
+qL = qDelayL;
+qR = qDelayR;
+qDelayL = qRawL;
+qDelayR = qRawR;
+
+// Band switch, using the low-passed carrier x_c[n]:
+// Both: normal AM / DSB, y[n] = B*x_c[n] + alpha*x_c[n]*m[n].
+// USB:  y[n] = B*x_c[n] + alpha*(x_0[n]*mc[n] - x_90[n]*ms[n]).
+// LSB:  y[n] = B*x_c[n] + alpha*(x_0[n]*mc[n] + x_90[n]*ms[n]).
+//
+// Both with B=1 is normal AM.
+// Both with B=0 is ringmodulation / DSB suppressed carrier.
+// USB or LSB with B=0 is pure SSB.
+// USB or LSB with B=1 keeps the original signal plus one sideband.
+SIDEBAND_i == 1 ? (
+    sideL = iL * mc - qL * ms;
+    sideR = iR * mc - qR * ms;
+    wetL = B_s * carrierL + ALPHA_s * sideL;
+    wetR = B_s * carrierR + ALPHA_s * sideR;
+) : (
+    SIDEBAND_i == 2 ? (
+        sideL = iL * mc + qL * ms;
+        sideR = iR * mc + qR * ms;
+        wetL = B_s * carrierL + ALPHA_s * sideL;
+        wetR = B_s * carrierR + ALPHA_s * sideR;
+    ) : (
+        a = B_s + ALPHA_s * m;
+        wetL = carrierL * a;
+        wetR = carrierR * a;
+    );
+);
+
+spl0 = wetL * OUT_GAIN_s;
+spl1 = wetR * OUT_GAIN_s;

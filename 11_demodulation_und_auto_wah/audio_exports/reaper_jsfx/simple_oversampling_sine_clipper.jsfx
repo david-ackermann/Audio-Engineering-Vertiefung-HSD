@@ -1,0 +1,195 @@
+desc:Simple Oversampling Sine Clipper
+
+slider1:F_OSC_HZ=5000<20,20000,1:log>f_0 oscillator frequency (Hz)
+slider2:OS_MODE=0<0,5,1{x1,x2,x4,x8,x16,x32}>oversampling
+slider3:THRESHOLD=0.5<0.05,1,0.001>T hard clip threshold
+slider4:LP_HZ=22000<1000,24000,1:log>f_TP anti-alias lowpass (Hz)
+slider5:OUT_DB=-6<-36,6,0.1>output (dB)
+
+in_pin:none
+out_pin:left output
+out_pin:right output
+
+@init
+phase = 0;
+
+// TPT-SVF states for an 8-section / 16th-order lowpass cascade.
+ic11 = 0; ic12 = 0;
+ic21 = 0; ic22 = 0;
+ic31 = 0; ic32 = 0;
+ic41 = 0; ic42 = 0;
+ic51 = 0; ic52 = 0;
+ic61 = 0; ic62 = 0;
+ic71 = 0; ic72 = 0;
+ic81 = 0; ic82 = 0;
+
+// Longer frequency smoothing avoids zipper noise when the oscillator
+// frequency fader is moved during playback.
+freq_smooth_ms = 50;
+param_smooth_ms = 20;
+freq_smooth_a = exp(-1 / (0.001 * freq_smooth_ms * srate));
+freq_smooth_b = 1 - freq_smooth_a;
+param_smooth_a = exp(-1 / (0.001 * param_smooth_ms * srate));
+param_smooth_b = 1 - param_smooth_a;
+
+OS_MODE_i = floor(min(max(OS_MODE, 0), 5) + 0.5);
+OS_FACTOR = 1;
+OS_MODE_i == 1 ? OS_FACTOR = 2;
+OS_MODE_i == 2 ? OS_FACTOR = 4;
+OS_MODE_i == 3 ? OS_FACTOR = 8;
+OS_MODE_i == 4 ? OS_FACTOR = 16;
+OS_MODE_i == 5 ? OS_FACTOR = 32;
+os_srate = srate * OS_FACTOR;
+
+F_OSC_HZ_t = min(max(F_OSC_HZ, 20), min(20000, srate * 0.45));
+THRESHOLD_t = min(max(THRESHOLD, 0.05), 1);
+LP_HZ_t = min(max(LP_HZ, 1000), min(24000, srate * 0.49));
+OUT_GAIN_t = 10^(OUT_DB / 20);
+
+F_OSC_HZ_s = F_OSC_HZ_t;
+THRESHOLD_s = THRESHOLD_t;
+LP_HZ_s = LP_HZ_t;
+OUT_GAIN_s = OUT_GAIN_t;
+
+@slider
+OS_MODE_i = floor(min(max(OS_MODE, 0), 5) + 0.5);
+OS_FACTOR = 1;
+OS_MODE_i == 1 ? OS_FACTOR = 2;
+OS_MODE_i == 2 ? OS_FACTOR = 4;
+OS_MODE_i == 3 ? OS_FACTOR = 8;
+OS_MODE_i == 4 ? OS_FACTOR = 16;
+OS_MODE_i == 5 ? OS_FACTOR = 32;
+os_srate = srate * OS_FACTOR;
+
+F_OSC_HZ_t = min(max(F_OSC_HZ, 20), min(20000, srate * 0.45));
+THRESHOLD_t = min(max(THRESHOLD, 0.05), 1);
+LP_HZ_t = min(max(LP_HZ, 1000), min(24000, srate * 0.49));
+OUT_GAIN_t = 10^(OUT_DB / 20);
+
+@sample
+F_OSC_HZ_s += (F_OSC_HZ_t - F_OSC_HZ_s) * freq_smooth_b;
+THRESHOLD_s += (THRESHOLD_t - THRESHOLD_s) * param_smooth_b;
+LP_HZ_s += (LP_HZ_t - LP_HZ_s) * param_smooth_b;
+OUT_GAIN_s += (OUT_GAIN_t - OUT_GAIN_s) * param_smooth_b;
+
+// Smooth, time-varying anti-aliasing lowpass. It is placed after clipping
+// and before decimation back to the host sample rate.
+lp = min(max(LP_HZ_s, 20), min(24000, srate * 0.49));
+g = tan($pi * lp / os_srate);
+
+i = 0;
+while (i < OS_FACTOR) (
+    // Oversampled oscillator:
+    // x[k] = sin(phi[k]), phi[k+1] = phi[k] + 2*pi*f_0/(L*f_s)
+    x = sin(phase);
+    phase += 2 * $pi * F_OSC_HZ_s / os_srate;
+    phase >= 2 * $pi ? phase -= 2 * $pi;
+
+    // Hard clipping:
+    // c[k] = min(max(x[k], -T), T)
+    c = min(max(x, -THRESHOLD_s), THRESHOLD_s);
+
+    // 16th-order Butterworth-like TPT lowpass cascade.
+    // A real filter is not an ideal brickwall: frequencies above f_TP are
+    // attenuated strongly, but not mathematically removed.
+    q = 0.5024193;
+    k = 1 / q;
+    a1 = 1 / (1 + g * (g + k));
+    a2 = g * a1;
+    a3 = g * a2;
+    v3 = c - ic12;
+    v1 = a1 * ic11 + a2 * v3;
+    v2 = ic12 + a2 * ic11 + a3 * v3;
+    ic11 = 2 * v1 - ic11;
+    ic12 = 2 * v2 - ic12;
+    y = v2;
+
+    q = 0.5224986;
+    k = 1 / q;
+    a1 = 1 / (1 + g * (g + k));
+    a2 = g * a1;
+    a3 = g * a2;
+    v3 = y - ic22;
+    v1 = a1 * ic21 + a2 * v3;
+    v2 = ic22 + a2 * ic21 + a3 * v3;
+    ic21 = 2 * v1 - ic21;
+    ic22 = 2 * v2 - ic22;
+    y = v2;
+
+    q = 0.5669440;
+    k = 1 / q;
+    a1 = 1 / (1 + g * (g + k));
+    a2 = g * a1;
+    a3 = g * a2;
+    v3 = y - ic32;
+    v1 = a1 * ic31 + a2 * v3;
+    v2 = ic32 + a2 * ic31 + a3 * v3;
+    ic31 = 2 * v1 - ic31;
+    ic32 = 2 * v2 - ic32;
+    y = v2;
+
+    q = 0.6468218;
+    k = 1 / q;
+    a1 = 1 / (1 + g * (g + k));
+    a2 = g * a1;
+    a3 = g * a2;
+    v3 = y - ic42;
+    v1 = a1 * ic41 + a2 * v3;
+    v2 = ic42 + a2 * ic41 + a3 * v3;
+    ic41 = 2 * v1 - ic41;
+    ic42 = 2 * v2 - ic42;
+    y = v2;
+
+    q = 0.7881546;
+    k = 1 / q;
+    a1 = 1 / (1 + g * (g + k));
+    a2 = g * a1;
+    a3 = g * a2;
+    v3 = y - ic52;
+    v1 = a1 * ic51 + a2 * v3;
+    v2 = ic52 + a2 * ic51 + a3 * v3;
+    ic51 = 2 * v1 - ic51;
+    ic52 = 2 * v2 - ic52;
+    y = v2;
+
+    q = 1.0606777;
+    k = 1 / q;
+    a1 = 1 / (1 + g * (g + k));
+    a2 = g * a1;
+    a3 = g * a2;
+    v3 = y - ic62;
+    v1 = a1 * ic61 + a2 * v3;
+    v2 = ic62 + a2 * ic61 + a3 * v3;
+    ic61 = 2 * v1 - ic61;
+    ic62 = 2 * v2 - ic62;
+    y = v2;
+
+    q = 1.7224471;
+    k = 1 / q;
+    a1 = 1 / (1 + g * (g + k));
+    a2 = g * a1;
+    a3 = g * a2;
+    v3 = y - ic72;
+    v1 = a1 * ic71 + a2 * v3;
+    v2 = ic72 + a2 * ic71 + a3 * v3;
+    ic71 = 2 * v1 - ic71;
+    ic72 = 2 * v2 - ic72;
+    y = v2;
+
+    q = 5.1011486;
+    k = 1 / q;
+    a1 = 1 / (1 + g * (g + k));
+    a2 = g * a1;
+    a3 = g * a2;
+    v3 = y - ic82;
+    v1 = a1 * ic81 + a2 * v3;
+    v2 = ic82 + a2 * ic81 + a3 * v3;
+    ic81 = 2 * v1 - ic81;
+    ic82 = 2 * v2 - ic82;
+    y = v2;
+
+    i += 1;
+);
+
+spl0 = y * OUT_GAIN_s;
+spl1 = y * OUT_GAIN_s;

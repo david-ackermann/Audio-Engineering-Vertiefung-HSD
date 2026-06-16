@@ -17,7 +17,7 @@ Materialien der zweiten Vorlesung zu Fensterung, Fensterspektren, Faltung und An
 
 ## Aktuelle Blockstruktur
 
-- `01_uebergang_ft_zu_fensterung`
+- `01_übergang_ft_zu_fensterung`
 - `02_rechteckfenster_als_beobachtung`
 - `03_rechteck_zu_sinc`
 - `04_faltung_als_fensterkopien`
@@ -31,7 +31,7 @@ Materialien der zweiten Vorlesung zu Fensterung, Fensterspektren, Faltung und An
 ### Block 4
 
 - `04A_formelkarte_und_zutaten`
-- `04B_faltung_als_ueberlappung`
+- `04B_faltung_als_überlappung`
 - `04C1_rampe_und_dirac`
 - `04C2_spektrum_und_spektrallinie`
 - `04D_cosinus_mit_zwei_linien`
@@ -54,7 +54,7 @@ Materialien der zweiten Vorlesung zu Fensterung, Fensterspektren, Faltung und An
 
 Jeder dieser beiden Datensätze enthält:
 
-- `08A_ir_ueberblick`
+- `08A_ir_überblick`
 - `08B` bis `08F` Rechteckfenster `40 / 20 / 10 / 5 / 2 ms`
 - `08G` bis `08K` Hammingfenster `40 / 20 / 10 / 5 / 2 ms`
 

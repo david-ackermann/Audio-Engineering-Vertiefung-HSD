@@ -1,0 +1,137 @@
+desc:Simple PM FM Delayline Effect
+
+slider1:MODE=0<0,1,1{PM delayline,FM delayline}>mode
+slider2:MOD_SHAPE=0<0,2,1{Sine,Triangle,Rectangle}>modulator shape
+slider3:F_M_HZ=5<0.05,1000,0.01:sqr>f_m modulation frequency (Hz)
+slider4:DELTA=0.4<0,1,0.01>delta modulation depth
+slider5:OUT_DB=-3<-36,6,0.1>output (dB)
+
+in_pin:left input
+in_pin:right input
+out_pin:left output
+out_pin:right output
+
+@init
+MAX_DELAY_SAMPLES = 262144;
+BASE_DELAY_MS = 40;
+MAX_MOD_DELAY_MS = 20;
+
+bufL = 0;
+bufR = MAX_DELAY_SAMPLES;
+write_pos = 0;
+mod_phase = 0;
+
+i = 0;
+loop(MAX_DELAY_SAMPLES * 2,
+    i[0] = 0;
+    i += 1;
+);
+
+smooth_ms = 10;
+smooth_a = exp(-1 / (0.001 * smooth_ms * srate));
+smooth_b = 1 - smooth_a;
+
+MODE_i = floor(MODE + 0.5);
+MOD_SHAPE_i = floor(MOD_SHAPE + 0.5);
+
+F_M_HZ_t = F_M_HZ;
+DELTA_t = DELTA;
+OUT_GAIN_t = 10^(OUT_DB / 20);
+
+F_M_HZ_s = F_M_HZ_t;
+DELTA_s = DELTA_t;
+OUT_GAIN_s = OUT_GAIN_t;
+
+@slider
+MODE_i = floor(min(max(MODE, 0), 1) + 0.5);
+MOD_SHAPE_i = floor(min(max(MOD_SHAPE, 0), 2) + 0.5);
+
+F_M_HZ_t = min(max(F_M_HZ, 0.05), min(1000, srate * 0.45));
+DELTA_t = min(max(DELTA, 0), 1);
+OUT_GAIN_t = 10^(OUT_DB / 20);
+
+@sample
+F_M_HZ_s += (F_M_HZ_t - F_M_HZ_s) * smooth_b;
+DELTA_s += (DELTA_t - DELTA_s) * smooth_b;
+OUT_GAIN_s += (OUT_GAIN_t - OUT_GAIN_s) * smooth_b;
+
+// Modulator m[n] and normalized integral q[n].
+// DELTA is the modulation depth, not a user-facing delay time.
+// PM delayline: d[n] = d_0 + D_max*delta*m[n].
+// FM delayline: d[n] = d_0 + D_max*delta*q[n], where q[n] is the integral shape.
+p = mod_phase / (2 * $pi);
+
+MOD_SHAPE_i == 0 ? (
+    m = sin(mod_phase);
+    q = -cos(mod_phase);
+) : (
+    MOD_SHAPE_i == 1 ? (
+        p < 0.25 ? (
+            m = 4 * p;
+            integral = 2 * p * p;
+        ) : (
+            p < 0.75 ? (
+                m = 2 - 4 * p;
+                integral = 2 * p - 2 * p * p - 0.25;
+            ) : (
+                m = -4 + 4 * p;
+                integral = -4 * p + 2 * p * p + 2;
+            );
+        );
+        q = 8 * integral - 1;
+    ) : (
+        p < 0.5 ? (
+            m = 1;
+            integral = p;
+        ) : (
+            m = -1;
+            integral = 1 - p;
+        );
+        q = 4 * integral - 1;
+    );
+);
+
+mod_phase += 2 * $pi * F_M_HZ_s / srate;
+mod_phase >= 2 * $pi ? mod_phase -= 2 * $pi;
+
+base_delay_samples = BASE_DELAY_MS * 0.001 * srate;
+delta_samples = MAX_MOD_DELAY_MS * DELTA_s * 0.001 * srate;
+
+MODE_i == 0 ? (
+    modulation_delay_samples = delta_samples * m;
+) : (
+    modulation_delay_samples = delta_samples * q;
+);
+
+delay_samples = base_delay_samples + modulation_delay_samples;
+delay_samples = min(max(delay_samples, 1), MAX_DELAY_SAMPLES - 2);
+
+xL = spl0;
+xR = spl1;
+
+writeL = bufL + write_pos;
+writeR = bufR + write_pos;
+writeL[0] = xL;
+writeR[0] = xR;
+
+read_pos = write_pos - delay_samples;
+read_pos < 0 ? read_pos += MAX_DELAY_SAMPLES;
+
+i0 = floor(read_pos);
+frac = read_pos - i0;
+i1 = i0 + 1;
+i1 >= MAX_DELAY_SAMPLES ? i1 -= MAX_DELAY_SAMPLES;
+
+readL0 = bufL + i0;
+readL1 = bufL + i1;
+readR0 = bufR + i0;
+readR1 = bufR + i1;
+
+yL = (1 - frac) * readL0[0] + frac * readL1[0];
+yR = (1 - frac) * readR0[0] + frac * readR1[0];
+
+write_pos += 1;
+write_pos >= MAX_DELAY_SAMPLES ? write_pos = 0;
+
+spl0 = yL * OUT_GAIN_s;
+spl1 = yR * OUT_GAIN_s;

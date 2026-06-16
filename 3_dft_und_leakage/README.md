@@ -1,6 +1,6 @@
 # 3 DFT und iDFT
 
-Vorlesungsordner fuer die dritte Vorlesung. Inhaltlich endet diese Vorlesung jetzt bei der einzelnen Block-DFT und iDFT. Der Leakage- und Fenstervergleich ist in die vierte Vorlesung verschoben und liegt dort als neuer Block 1.
+Vorlesungsordner für die dritte Vorlesung. Inhaltlich endet diese Vorlesung jetzt bei der einzelnen Block-DFT und iDFT. Der Leakage- und Fenstervergleich ist in die vierte Vorlesung verschoben und liegt dort als neuer Block 1.
 
 ## Aktueller Stand
 
@@ -19,7 +19,7 @@ In diesem Ordner liegen:
 - `export_block_05_dft_analyzerlogik.py`
 - `export_block_06_idft_rekonstruktion.py`
 
-Zugehoerige Storyboards liegen unter:
+Zugehörige Storyboards liegen unter:
 
 - `png_storyboards/02_zeitbereich_und_frequenzraster/`
 - `png_storyboards/03_aliasing/`
@@ -29,15 +29,15 @@ Zugehoerige Storyboards liegen unter:
 
 ## Inhalt von Vorlesung 3
 
-- Einstieg ueber Analyzer, Blockbildung und diskretes Signal
+- Einstieg über Analyzer, Blockbildung und diskretes Signal
 - Abtastung und diskrete Folge `x[n]`
 - Aliasbildung, Nyquist und periodische Spektralkopien
 - endlicher Beobachtungsblock, `T_obs`, `Delta f` und DFT-Bins
 - diskrete Kreisfrequenz `Omega_k`, Binindex `k` und Bezug zu `f_k`
 - DFT als Analyzerlogik
-- iDFT als Rueckweg aus den Binwerten in denselben Zeitblock
+- iDFT als Rückweg aus den Binwerten in denselben Zeitblock
 
-## Umgesetzte Bloecke
+## Umgesetzte Blöcke
 
 - `Block 2A`: vom kontinuierlichen Signal zu `x[n]`
 - `Block 3A`: Alias-Familien im Basisbereich
@@ -47,7 +47,7 @@ Zugehoerige Storyboards liegen unter:
 - `Block 4A2`: diskrete Basisfunktion als Phasor-Animation
 - `Block 4A3`: Cosinus- und Sinusanteile der diskreten DFT-Analysebasis
 - `Block 4B`: DFT-Bin-Raster auf der diskreten Kreisfrequenzachse
-- `Block 5A`: DFT-Probe-Serien fuer einzelne Bins
+- `Block 5A`: DFT-Probe-Serien für einzelne Bins
 - `Block 6`: iDFT-Rekonstruktionsserie
 
 ## Anschluss

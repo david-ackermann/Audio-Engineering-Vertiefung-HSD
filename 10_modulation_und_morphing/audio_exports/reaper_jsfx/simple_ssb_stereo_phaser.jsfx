@@ -1,0 +1,121 @@
+desc:Simple SSB Stereo Phaser
+
+slider1:RATE_HZ=0.35<0.01,8,0.01>f_m SSB shift / rate (Hz)
+slider2:D_GAIN=0.5<0,1,0.01>d dry gain
+slider3:E_GAIN=0.5<0,1,0.01>e SSB gain
+slider4:OUT_DB=0<-24,12,0.1>output (dB)
+
+in_pin:left input
+in_pin:right input
+out_pin:left output
+out_pin:right output
+
+@init
+phase = 0;
+
+STAGES = 6;
+COEF_0 = 0;
+COEF_1 = 16;
+STATE = 64;
+
+// 12th-order allpass Hilbert approximation:
+// x_0[n] = A_0(-z^2){x[n]}
+// x_90[n] = z^-1 A_1(-z^2){x[n]}
+COEF_0[0] = 0.036681502163648;
+COEF_0[1] = 0.274631759379454;
+COEF_0[2] = 0.561098969787919;
+COEF_0[3] = 0.769741833862266;
+COEF_0[4] = 0.892260818003879;
+COEF_0[5] = 0.962094548378084;
+
+COEF_1[0] = 0.136547624631958;
+COEF_1[1] = 0.423138617436567;
+COEF_1[2] = 0.677540049974162;
+COEF_1[3] = 0.839889624849638;
+COEF_1[4] = 0.931541959963184;
+COEF_1[5] = 0.987816370732897;
+
+qDelayL = 0;
+qDelayR = 0;
+
+smooth_ms = 10;
+smooth_a = exp(-1 / (0.001 * smooth_ms * srate));
+smooth_b = 1 - smooth_a;
+
+RATE_t = RATE_HZ;
+D_t = D_GAIN;
+E_t = E_GAIN;
+OUT_t = 10^(OUT_DB / 20);
+
+RATE_s = RATE_t;
+D_s = D_t;
+E_s = E_t;
+OUT_s = OUT_t;
+
+function allpass2_chain(input, coef_base, state_base)
+local(stage, section_state, x, y, c)
+(
+    x = input;
+    stage = 0;
+    loop(STAGES,
+        section_state = state_base + 4 * stage;
+        c = coef_base[stage];
+
+        // A_i(z) = (z^-2 - c) / (1 - c*z^-2)
+        // y[n] = c*y[n-2] + x[n-2] - c*x[n]
+        y = c * section_state[3] + section_state[1] - c * x;
+
+        section_state[1] = section_state[0];
+        section_state[0] = x;
+        section_state[3] = section_state[2];
+        section_state[2] = y;
+
+        x = y;
+        stage += 1;
+    );
+    x;
+);
+
+@slider
+RATE_t = min(max(RATE_HZ, 0.01), 8);
+D_t = min(max(D_GAIN, 0), 1);
+E_t = min(max(E_GAIN, 0), 1);
+OUT_t = 10^(OUT_DB / 20);
+
+@sample
+RATE_s += (RATE_t - RATE_s) * smooth_b;
+D_s += (D_t - D_s) * smooth_b;
+E_s += (E_t - E_s) * smooth_b;
+OUT_s += (OUT_t - OUT_s) * smooth_b;
+
+cos_m = cos(phase);
+sin_m = sin(phase);
+phase += 2 * $pi * RATE_s / srate;
+phase >= 2 * $pi ? phase -= 2 * $pi;
+
+xL = spl0;
+xR = spl1;
+
+iL = allpass2_chain(xL, COEF_0, STATE + 0);
+iR = allpass2_chain(xR, COEF_0, STATE + 32);
+
+qRawL = allpass2_chain(xL, COEF_1, STATE + 64);
+qRawR = allpass2_chain(xR, COEF_1, STATE + 96);
+
+qL = qDelayL;
+qR = qDelayR;
+qDelayL = qRawL;
+qDelayR = qRawR;
+
+// SSB stereo phaser after Wardle/Zolzer:
+// y_L[n] = d*x[n] + e*(x_0[n]*cos(w_m n) - x_90[n]*sin(w_m n))
+// y_R[n] = d*x[n] + e*(x_0[n]*cos(w_m n) + x_90[n]*sin(w_m n))
+//
+// The SSB part shifts the spectrum slightly up/down.
+// With subsonic f_m and added dry signal this becomes a stereo phaser:
+// notches move in opposite directions for left and right.
+ssbUpL = iL * cos_m - qL * sin_m;
+ssbDownR = iR * cos_m + qR * sin_m;
+
+spl0 = (D_s * xL + E_s * ssbUpL) * OUT_s;
+spl1 = (D_s * xR + E_s * ssbDownR) * OUT_s;

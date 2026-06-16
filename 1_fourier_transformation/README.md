@@ -49,7 +49,7 @@ Gemeinsame Hilfsdateien:
 
 - Block `06`
   - `export_block_06A_homework_reconstruction_spectra.py`
-  - `export_block_06B_zeitfunktion_zu_spektrum_waehlen.py`
+  - `export_block_06B_zeitfunktion_zu_spektrum_wählen.py`
 
 ## Output-Struktur
 
@@ -70,7 +70,7 @@ Innerhalb dieser Blockordner tragen die Unterordner jetzt ebenfalls die Blockken
 - `04A_inverse_ft_storyboard_serien/04A_inverse_ft_storyboard_t0p18`
 - `05A_inverse_ft_windowed_storyboard_t0p18`
 - `06A_homework_reconstruction_spectra`
-- `06B_zeitfunktion_zu_spektrum_waehlen`
+- `06B_zeitfunktion_zu_spektrum_wählen`
 
 ## Stilreferenz
 

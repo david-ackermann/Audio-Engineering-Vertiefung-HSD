@@ -1,6 +1,6 @@
 # 4 Leakage, STFT und iSTFT
 
-Vorlesungsordner fuer die vierte Vorlesung. Die Vorlesung beginnt jetzt mit Leakage und Fenstervergleich als Block 1. Danach folgen STFT/Spektrogramm als Block 2, iSTFT/Overlap-Add als Block 3 und ein Hausaufgabenblock als Block 4.
+Vorlesungsordner für die vierte Vorlesung. Die Vorlesung beginnt jetzt mit Leakage und Fenstervergleich als Block 1. Danach folgen STFT/Spektrogramm als Block 2, iSTFT/Overlap-Add als Block 3 und ein Hausaufgabenblock als Block 4.
 
 ## Aktueller Stand
 
@@ -42,25 +42,25 @@ Storyboards liegen unter:
 - Fensterform als reale Gewichtung des Zeitblocks
 - STFT als fortgesetzte Block-DFT
 - Spektrogramm als Darstellung von `|X[m,k]|`
-- Einfluss von Fensterlaenge und Hop Size
-- iSTFT als Rueckweg pro Frame
-- Overlap-Add und Bedingungen fuer saubere Rekonstruktion
+- Einfluss von Fensterlänge und Hop Size
+- iSTFT als Rückweg pro Frame
+- Overlap-Add und Bedingungen für saubere Rekonstruktion
 - Hausaufgaben zu DFT-/STFT-Raster, Fensterpositionen, Klick-Analyse und Parameterwahl
 
-## Umgesetzte Bloecke
+## Umgesetzte Blöcke
 
 - `Block 1A`: Off-Bin-Analyzerlogik mit Rechteckfenster
 - `Block 1B`: paralleler Hamming-Fall
-- `Block 1C`: spektrale Leakage-Erklaerung
-- `Block 1D`: Fenstervergleich fuer denselben Off-Bin-Ton
+- `Block 1C`: spektrale Leakage-Erklärung
+- `Block 1D`: Fenstervergleich für denselben Off-Bin-Ton
 - `Block 2A`: bewegte Block-DFT mit Rechteckfenster
 - `Block 2B`: Vergleich Rechteckfenster gegen Hann-Fenster bei nicht-binzentrierten Frequenzen
-- `Block 2C`: Zeit-Frequenz-Kompromiss ueber die Fensterlaenge
+- `Block 2C`: Zeit-Frequenz-Kompromiss über die Fensterlänge
 - `Block 2D`: Einfluss der Hop Size auf die Zeitabtastung
-- `Block 3A`: iSTFT als Rueckweg pro Frame
+- `Block 3A`: iSTFT als Rückweg pro Frame
 - `Block 3B`: Zero Padding und Rekonstruktion des gesamten Signals
 - `Block 4`: Hausaufgaben mit Studierendenfassung, Erwartungshorizont und Skizzen zu Aufgabe 3 und 4
 
 ## Anschluss
 
-Die anschliessende Systemsicht beginnt im uebergreifenden Lehrplan mit Vorlesung 5.
+Die anschließende Systemsicht beginnt im übergreifenden Lehrplan mit Vorlesung 5.

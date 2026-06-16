@@ -5,4 +5,18 @@ Thumbs.db
 anaconda_projects/
 **/__pycache__/
 **/.ipynb_checkpoints/
+tmp/
+
+# Audio data / local source material
+*.wav
+*.wave
+*.mp3
+*.aif
+*.aiff
+*.flac
+*.ogg
+*.m4a
+*.aac
+*.opus
+*.wma
 

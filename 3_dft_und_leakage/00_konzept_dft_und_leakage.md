@@ -7,13 +7,13 @@ Die Studierenden sollen am Ende verstehen:
 - dass ein digitales Audiosystem nicht $x(t)$, sondern eine diskrete Folge $x[n]$ verarbeitet
 - wie Abtastfrequenz, Blocklaenge und Beobachtungsdauer gemeinsam das Frequenzraster bestimmen
 - wie Nyquist-Grenze und Aliasbildung praktisch zu deuten sind
-- warum ein FFT-basierter Analyzer immer auf endlichen Bloecken arbeitet
+- warum ein FFT-basierter Analyzer immer auf endlichen Blöcken arbeitet
 - was Frequenzbins und der Binabstand $\Delta f = f_s / N$ bedeuten
 - wie die diskrete Kreisfrequenz $\Omega_k$ den DFT-Bin als Kreisbewegung beschreibt
 - wie die DFT einen Block an diskreten Frequenzstellen ausliest
 - wie die iDFT aus diesen Binwerten denselben Zeitblock rekonstruiert
 
-Leakage wird am Ende nur als offene Anschlussfrage motiviert: Was passiert, wenn die analysierte Schwingung nicht genau auf ein DFT-Bin passt? Die ausfuehrliche Behandlung ist jetzt Block 1 der vierten Vorlesung.
+Leakage wird am Ende nur als offene Anschlussfrage motiviert: Was passiert, wenn die analysierte Schwingung nicht genau auf ein DFT-Bin passt? Die ausführliche Behandlung ist jetzt Block 1 der vierten Vorlesung.
 
 ## Didaktische Rolle im Gesamtaufbau
 
@@ -26,16 +26,16 @@ Die fachliche Kette lautet:
 - aus dem endlichen Beobachtungsblock folgen $T_{\mathrm{obs}}$, $\Delta f$ und die Binfrequenzen $f_k$
 - aus $k$ und $N$ folgt die diskrete Kreisfrequenz $\Omega_k = 2 \pi k / N$
 - aus dem Beobachtungsblock wird per DFT/FFT ein Spektralbild
-- aus den Binwerten fuehrt die iDFT wieder zum lokalen Zeitblock
+- aus den Binwerten führt die iDFT wieder zum lokalen Zeitblock
 
-Mitgenommen werden muessen insbesondere:
+Mitgenommen werden müssen insbesondere:
 
 - $x[n]$ als diskrete Folge
 - Aliasbildung als periodische Frequenzmehrdeutigkeit modulo $f_s$
 - $T_{\mathrm{obs}}$ und $\Delta f$ als Folge des endlichen Beobachtungsblocks
 - DFT-Bins als diskretes Frequenzraster
 - DFT und FFT als Messlogik, nicht als neues Signal
-- iDFT als Rueckweg zum betrachteten Block
+- iDFT als Rückweg zum betrachteten Block
 
 ## Anschluss an Vorlesung 2
 
@@ -51,9 +51,9 @@ $$
 
 Vorlesung 3 fuegt nun die digitale Sicht hinzu: Abtastung, diskrete Folge, DFT-Raster und Blockanalyse.
 
-Ein geeigneter Uebergangssatz ist:
+Ein geeigneter Übergangssatz ist:
 
-> Vorlesung 2 erklaert die kontinuierliche Spektralform. Vorlesung 3 erklaert, wie Abtastung und DFT daraus ein diskretes Analysebild machen.
+> Vorlesung 2 erklärt die kontinuierliche Spektralform. Vorlesung 3 erklärt, wie Abtastung und DFT daraus ein diskretes Analysebild machen.
 
 ## Mathematischer Kern
 
@@ -91,46 +91,46 @@ $$
 
 ## Didaktischer roter Faden
 
-1. Einstieg ueber Analyzer, Spektrum und Spektrogramm als Motivation
-2. Rueckgriff auf bekannte Fourier-Begriffe und saubere Notation
+1. Einstieg über Analyzer, Spektrum und Spektrogramm als Motivation
+2. Rückgriff auf bekannte Fourier-Begriffe und saubere Notation
 3. Block 2A: vom kontinuierlichen Signal $x(t)$ zur diskreten Folge $x[n]$
 4. Block 3A: Aliasing als Mehrdeutigkeit analoger Frequenzen nach der Abtastung
 5. Block 3B: ideale Abtastung eines tiefpassbegrenzten Signals und periodische Spektralkopien
 6. Block 3C: endlicher Beobachtungsblock, Beobachtungsdauer $T_{\mathrm{obs}}$ und Binraster $\Delta f$
 7. Block 4: diskrete Kreisfrequenz, Phasor und Binfrequenz
 8. Block 5: DFT als formale Analyzerlogik
-9. Block 6: iDFT als Rueckweg zum Zeitblock
-10. Ausblick: Off-Bin-Frequenz und Leakage als Startfrage fuer Vorlesung 4
+9. Block 6: iDFT als Rückweg zum Zeitblock
+10. Ausblick: Off-Bin-Frequenz und Leakage als Startfrage für Vorlesung 4
 
-## Zeitplan fuer 120 Minuten
+## Zeitplan für 120 Minuten
 
 | Zeit | Abschnitt | Inhalt | mathematischer Fokus | didaktische Funktion |
 |---|---|---|---|---|
 | 0-10 min | Einstieg | Analyzer, Spektrum, Leitfrage | noch keine neue Formel | Motivation und Anker |
-| 10-20 min | Rueckgriff | FT, Phase, Fensterung, Notation $x(t)$, $x_s(t)$, $x[n]$ | Begriffs- und Objektklaerung | saubere Notationsbasis |
+| 10-20 min | Rückgriff | FT, Phase, Fensterung, Notation $x(t)$, $x_s(t)$, $x[n]$ | Begriffs- und Objektklaerung | saubere Notationsbasis |
 | 20-32 min | Block 2A | $x[n] = x_c(n T_s)$, Samples auf der Kurve, diskrete Folge | Abtastung im Zeitbereich | Wechsel von $t$ zu $n$ |
 | 32-45 min | Block 3A/3B | Nyquist, Basisbereich, Alias-Familien, periodische Spektralkopien | Frequenz modulo $f_s$, $X_s(f)$ | Mehrdeutigkeit klaeren |
-| 45-58 min | Block 3C | endlicher Block, $T_{\mathrm{obs}}$, $\Delta f$, $f_k$ | $T_{\mathrm{obs}} = N / f_s$, $\Delta f = f_s / N$ | Uebergang zum Analyzer |
-| 58-74 min | Block 4 | diskrete Kreisfrequenz, Phasor, Binfrequenz und Prueffrequenz | $\Omega_k = 2 \pi k / N$, $f_k = k f_s / N$ | Begriffliche Bruecke vor der DFT |
-| 74-88 min | Block 5 | Blocklaenge, Bins, Projektion, FFT als Algorithmus | $X[k]$, diskrete Prueffrequenzen | von der Theorie zur Messlogik |
+| 45-58 min | Block 3C | endlicher Block, $T_{\mathrm{obs}}$, $\Delta f$, $f_k$ | $T_{\mathrm{obs}} = N / f_s$, $\Delta f = f_s / N$ | Übergang zum Analyzer |
+| 58-74 min | Block 4 | diskrete Kreisfrequenz, Phasor, Binfrequenz und Prüffrequenz | $\Omega_k = 2 \pi k / N$, $f_k = k f_s / N$ | Begriffliche Bruecke vor der DFT |
+| 74-88 min | Block 5 | Blocklaenge, Bins, Projektion, FFT als Algorithmus | $X[k]$, diskrete Prüffrequenzen | von der Theorie zur Messlogik |
 | 88-96 min | Pause | kurze Unterbrechung | - | Entlastung |
 | 96-112 min | Block 6 | Rekonstruktion aus Bin-Werten | iDFT-Gleichung | Analyse und Synthese verbinden |
-| 112-120 min | Ausblick | nicht-binzentrierter Ton als offene Frage | Was misst ein Bin, wenn kein Bin exakt passt? | Startpunkt fuer Leakage in Vorlesung 4 setzen |
+| 112-120 min | Ausblick | nicht-binzentrierter Ton als offene Frage | Was misst ein Bin, wenn kein Bin exakt passt? | Startpunkt für Leakage in Vorlesung 4 setzen |
 
-## Typische Verstaendnishuerden
+## Typische Verständnishürden
 
 - DFT und FFT werden leicht verwechselt.
-- Das Spektrogramm wird schnell fuer "das Signal selbst" gehalten.
+- Das Spektrogramm wird schnell für "das Signal selbst" gehalten.
 - Frequenzaufloesung wird vorschnell allein der Samplerate zugeschrieben.
-- hoehere FFT-Laenge wird mit "mehr wahrer Aufloesung" gleichgesetzt.
+- hoehere FFT-Länge wird mit "mehr wahrer Aufloesung" gleichgesetzt.
 - Aliasbildung wird als Verschwinden hoher Frequenzen missverstanden.
-- negative Frequenzen und DFT-Bins oberhalb von Nyquist werden zu spaet zusammengefuehrt.
+- negative Frequenzen und DFT-Bins oberhalb von Nyquist werden zu spaet zusammengeführt.
 
-## Demo-, Hoer- und Python-Einsatz
+## Demo-, Hör- und Python-Einsatz
 
-- Hoerdemo: Aliasbildung mit Sweep oder Sinus oberhalb von $f_s / 2$
+- Hördemo: Aliasbildung mit Sweep oder Sinus oberhalb von $f_s / 2$
 - Analyzer-Demo: gleicher Block bei verschiedenen $N$ und $f_s$
-- Python: DFT-Bins als Pruefschwingungen
+- Python: DFT-Bins als Prüfschwingungen
 - Python: DFT und iDFT desselben endlichen Blocks
 - Abschlussdemo: off-bin Ton als nicht mehr sauber von einem einzelnen Bin getroffener Fall
 

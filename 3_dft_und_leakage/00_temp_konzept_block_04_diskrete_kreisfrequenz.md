@@ -1,8 +1,8 @@
 # TEMP Konzept Block 4: Diskrete Kreisfrequenz vor der DFT
 
-Arbeitsstand: temporaere Konzeptdatei fuer die weitere Ausarbeitung im Laufe des Tages.
+Arbeitsstand: temporaere Konzeptdatei für die weitere Ausarbeitung im Laufe des Tages.
 
-Dieses Dokument ist bewusst nicht in `00_konzept_dft_und_leakage.md` eingearbeitet. Es sammelt die detaillierte didaktische Linie fuer den neuen Block 4 zwischen Block 3C und der DFT-Analyzerlogik.
+Dieses Dokument ist bewusst nicht in `00_konzept_dft_und_leakage.md` eingearbeitet. Es sammelt die detaillierte didaktische Linie für den neuen Block 4 zwischen Block 3C und der DFT-Analyzerlogik.
 
 Ausgangspunkt: Vorschlag `c:\Users\ackerm_d\Downloads\diskrete_kreisfrequenz_dft_vorlesungsbaustein.md`
 
@@ -15,20 +15,20 @@ Block 3C endet mit:
 - Frequenzraster $\Delta f = f_s / N$
 - Binfrequenzen $f_k = k f_s / N$
 
-Der neue Block 4 soll verhindern, dass die DFT-Formel zu frueh kommt. Vor der Summenformel muss klar werden:
+Der neue Block 4 soll verhindern, dass die DFT-Formel zu früh kommt. Vor der Summenformel muss klar werden:
 
-- Ein diskretes Signal wird ueber Sample-Indizes $n$ betrachtet.
+- Ein diskretes Signal wird über Sample-Indizes $n$ betrachtet.
 - Die zentrale Frage ist nicht zuerst "Welche Frequenz in Hz?", sondern "Um welchen Winkel dreht sich der Zeiger pro Sample?"
 - Die DFT-Bins sind diskrete Kreisfrequenzen auf dem Einheitskreis.
 - Der Bereich oberhalb $\pi$ ist in der DFT die negative Frequenzseite, nicht eine neue positive Audiofrequenz.
 
 Kernsatz:
 
-> Erst den Zeiger erklaeren, dann die Formel. Erst den Kreis erklaeren, dann die Frequenzachse. Erst $N = 8$ zeigen, dann generalisieren.
+> Erst den Zeiger erklären, dann die Formel. Erst den Kreis erklären, dann die Frequenzachse. Erst $N = 8$ zeigen, dann generalisieren.
 
 ## Lernziele
 
-Nach Block 4 sollen die Studierenden sagen koennen:
+Nach Block 4 sollen die Studierenden sagen können:
 
 - $\Omega$ ist der Phasenzuwachs pro Sample.
 - $\Omega$ hat die anschauliche Einheit rad/sample.
@@ -39,11 +39,11 @@ Nach Block 4 sollen die Studierenden sagen koennen:
 - Daraus folgt $\Omega_k = 2\pi k / N$.
 - Die rohe Frequenzachse ist $f_k = k f_s / N$.
 - Bins oberhalb $N/2$ entsprechen negativen Frequenzen.
-- Fuer reelle Signale gilt die Spiegelbeziehung $X[N-k] = X[k]^*$.
+- Für reelle Signale gilt die Spiegelbeziehung $X[N-k] = X[k]^*$.
 
 ## Zeitrahmen
 
-Der Vorschlag ist fuer 20 bis 30 Minuten ausgelegt. In der 120-Minuten-Vorlesung ist wahrscheinlich ein kompakterer Block sinnvoll:
+Der Vorschlag ist für 20 bis 30 Minuten ausgelegt. In der 120-Minuten-Vorlesung ist wahrscheinlich ein kompakterer Block sinnvoll:
 
 | Zeit | Abschnitt | Ziel | Material |
 |---:|---|---|---|
@@ -71,15 +71,15 @@ Kompakte 15-Minuten-Variante:
 
 Leitfrage:
 
-> Wir betrachten heute nicht zuerst Frequenz in Hertz, sondern die Frage: Um welchen Winkel dreht sich ein komplexer Zeiger von einem Sample zum naechsten?
+> Wir betrachten heute nicht zuerst Frequenz in Hertz, sondern die Frage: Um welchen Winkel dreht sich ein komplexer Zeiger von einem Sample zum nächsten?
 
 Didaktischer Zweck:
 
 - Frequenz nicht sofort als Hz-Achse denken.
 - DFT-Bins geometrisch vorbereiten.
-- Den DFT-Exponentialterm spaeter als bekannte Zeigerfolge wiedererkennen.
+- Den DFT-Exponentialterm später als bekannte Zeigerfolge wiedererkennen.
 
-### 2. $\Omega$ einfuehren
+### 2. $\Omega$ einführen
 
 Definition:
 
@@ -170,7 +170,7 @@ e^{j(\Omega + 2\pi)n}
 = e^{j\Omega n}
 $$
 
-weil fuer ganzzahliges $n$ gilt:
+weil für ganzzahliges $n$ gilt:
 
 $$
 e^{j2\pi n} = 1
@@ -218,7 +218,7 @@ $$
 \Delta f = \frac{f_s}{N}
 $$
 
-Wichtig fuer die Formulierung:
+Wichtig für die Formulierung:
 
 > $f_k = k f_s / N$ ist zuerst die rohe DFT-Achse von 0 bis fast $f_s$. Oberhalb der Nyquist-Grenze lesen wir sie als negative Frequenzseite.
 
@@ -245,7 +245,7 @@ $$
 | 6 | $3\pi/2$ | 6000 Hz | $-2000\,\mathrm{Hz}$ | 2 |
 | 7 | $7\pi/4$ | 7000 Hz | $-1000\,\mathrm{Hz}$ | 1 |
 
-Erklaerung fuer $k = 7$:
+Erklärung für $k = 7$:
 
 $$
 \Omega_7 = \frac{7\pi}{4} = -\frac{\pi}{4} + 2\pi
@@ -257,7 +257,7 @@ $$
 
 Sprechsatz:
 
-> $7\pi / 4$ sieht aus wie ein grosser positiver Schritt, ist aber dieselbe diskrete Folge wie $-\pi / 4$.
+> $7\pi / 4$ sieht aus wie ein großer positiver Schritt, ist aber dieselbe diskrete Folge wie $-\pi / 4$.
 
 ### 8. Nyquist-Bin
 
@@ -304,7 +304,7 @@ $$
 \equiv -\Omega_k \pmod{2\pi}
 $$
 
-Fuer reelle Signale:
+Für reelle Signale:
 
 $$
 X[N-k] = X[k]^*
@@ -381,7 +381,7 @@ Visual: kontinuierliche Sinus- oder Zeigerbewegung, darunter Samples, daneben Ei
 Visual:
 
 - Einheitskreis
-- Punkte fuer $n = 0, 1, 2, \dots$
+- Punkte für $n = 0, 1, 2, \dots$
 - Beispiel $\Omega = \pi/4$
 
 Sprechsatz:
@@ -449,7 +449,7 @@ $$
 
 ### Folie 7: Positive, Nyquist- und negative Frequenzen
 
-Fuer gerades $N$:
+Für gerades $N$:
 
 $$
 k = 0 \quad \Rightarrow \quad \text{DC}
@@ -497,7 +497,7 @@ $$
 X[N-k] = X[k]^*
 $$
 
-Paarbildung fuer $N=8$:
+Paarbildung für $N=8$:
 
 - Bin 1 <-> Bin 7
 - Bin 2 <-> Bin 6
@@ -507,7 +507,7 @@ Paarbildung fuer $N=8$:
 
 ## Plot- und Skriptbezug
 
-Bereits vorhandene/angelegte Skripte fuer Block 4:
+Bereits vorhandene/angelegte Skripte für Block 4:
 
 - `export_block_04a0_kontinuierlicher_phasor_helix.py`
 - `export_block_04a_diskrete_kreisfrequenz_phasor_animation.py`
@@ -522,7 +522,7 @@ Bereits vorhandene Ausgabeordner:
 - $png_storyboards/04_diskrete_kreisfrequenz/04B/04B1_dft_bins_omega_raster$
 - `png_storyboards/04_diskrete_kreisfrequenz/04B/04B2_n32_k16_positive_spectrum`
 
-Moegliche Zuordnung:
+Mögliche Zuordnung:
 
 | Konzeptteil | passendes Material |
 |---|---|
@@ -545,8 +545,8 @@ Bin 6 ist der negative Frequenzpartner von Bin 2.
 
 Korrektur:
 
-- Fuer einseitige Magnitudenspektren reeller Signale oft ja.
-- Fuer die vollstaendige komplexe DFT, Phase und Rekonstruktion braucht man die negative Seite.
+- Für einseitige Magnitudenspektren reeller Signale oft ja.
+- Für die vollständige komplexe DFT, Phase und Rekonstruktion braucht man die negative Seite.
 
 ### Missverstaendnis 3: $\pi$ ist die Periodizitaet
 
@@ -555,7 +555,7 @@ Korrektur:
 - $\pi$ ist Nyquist.
 - Periodizitaet ist $2\pi$.
 
-### Missverstaendnis 4: Negative Frequenzen sind physikalisch neue Toene
+### Missverstaendnis 4: Negative Frequenzen sind physikalisch neue Töne
 
 Korrektur:
 
@@ -641,18 +641,18 @@ $$
 |X[6]| = |X[2]|
 $$
 
-## Arbeitscheckliste fuer die spaetere Integration
+## Arbeitscheckliste für die spätere Integration
 
 - [ ] Entscheiden, ob Block 4 auf 15, 20 oder 30 Minuten ausgelegt wird.
-- [ ] Entscheiden, ob die DFT-Formel in Block 4 nur vorbereitet oder schon eingefuehrt wird.
+- [ ] Entscheiden, ob die DFT-Formel in Block 4 nur vorbereitet oder schon eingeführt wird.
 - [ ] Folienreihenfolge final festlegen.
 - [ ] Bestehende 04A-Grafiken auf didaktische Reihenfolge pruefen.
 - [ ] Plotbeschriftungen auf deutsche Schreibweise und Vorlesungsstil vereinheitlichen.
 - [ ] Entscheiden, ob $\mathrm{rad/sample}$ als Einheit explizit in den Abbildungen stehen soll.
-- [ ] Nyquist-Sonderfall $k=N/2$ fuer gerade $N$ klar markieren.
+- [ ] Nyquist-Sonderfall $k=N/2$ für gerade $N$ klar markieren.
 - [ ] Reelle Spiegelbins nur vorbereiten oder bereits formal mit $X[N-k]=X[k]^*$ beweisen?
 - [ ] Kontrollfragen am Ende des Blocks einbauen.
-- [ ] Nach der Ausarbeitung relevante Teile in `00_konzept_dft_und_leakage.md` uebernehmen.
+- [ ] Nach der Ausarbeitung relevante Teile in `00_konzept_dft_und_leakage.md` übernehmen.
 
 ## Offene didaktische Entscheidungen
 
@@ -701,12 +701,12 @@ Vorteile:
 - Kreisraster hat 45-Grad-Schritte.
 - Nyquist liegt bei 4000 Hz.
 
-Moegliche Anpassung fuer Audio:
+Mögliche Anpassung für Audio:
 
 - $f_s = 48000\,\mathrm{Hz}$, $N = 8$ waere rechnerisch weniger griffig.
-- $f_s = 48000\,\mathrm{Hz}$, $N = 16$ ist audio-naeher, aber fuer den ersten Kreis unuebersichtlicher.
+- $f_s = 48000\,\mathrm{Hz}$, $N = 16$ ist audio-naeher, aber für den ersten Kreis unübersichtlicher.
 
 Pragmatischer Vorschlag:
 
-> Erst $N=8, f_s=8000\,\mathrm{Hz}$ als didaktisches Rechenbeispiel, spaeter Transfer auf reale Audio-Sampleraten.
+> Erst $N=8, f_s=8000\,\mathrm{Hz}$ als didaktisches Rechenbeispiel, später Transfer auf reale Audio-Sampleraten.
 

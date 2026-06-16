@@ -1,0 +1,94 @@
+desc:Simple Wah-Wah Bandpass
+
+slider1:CENTER_HZ=500<80,5000,1:sqr>center frequency (Hz)
+slider2:DEPTH_OCT=1.2<0,3,0.01>depth (octaves)
+slider3:Q=5<0.5,20,0.1>resonance / Q
+slider4:RATE_HZ=1.2<0.05,8,0.01>speed (Hz)
+slider5:MIX=1<0,1,0.01>wet mix
+slider6:OUT_DB=0<-24,12,0.1>output (dB)
+
+in_pin:left input
+in_pin:right input
+out_pin:left output
+out_pin:right output
+
+@init
+phase = 0;
+
+ic1L = 0;
+ic2L = 0;
+ic1R = 0;
+ic2R = 0;
+
+smooth_ms = 10;
+smooth_a = exp(-1 / (0.001 * smooth_ms * srate));
+smooth_b = 1 - smooth_a;
+
+CENTER_HZ_t = CENTER_HZ;
+DEPTH_OCT_t = DEPTH_OCT;
+Q_t = Q;
+RATE_HZ_t = RATE_HZ;
+MIX_t = MIX;
+OUT_GAIN_t = 10^(OUT_DB / 20);
+
+CENTER_HZ_s = CENTER_HZ_t;
+DEPTH_OCT_s = DEPTH_OCT_t;
+Q_s = Q_t;
+RATE_HZ_s = RATE_HZ_t;
+MIX_s = MIX_t;
+OUT_GAIN_s = OUT_GAIN_t;
+
+@slider
+CENTER_HZ_t = min(max(CENTER_HZ, 80), 5000);
+DEPTH_OCT_t = min(max(DEPTH_OCT, 0), 3);
+Q_t = min(max(Q, 0.5), 20);
+RATE_HZ_t = min(max(RATE_HZ, 0.05), 8);
+MIX_t = min(max(MIX, 0), 1);
+OUT_GAIN_t = 10^(OUT_DB / 20);
+
+@sample
+CENTER_HZ_s += (CENTER_HZ_t - CENTER_HZ_s) * smooth_b;
+DEPTH_OCT_s += (DEPTH_OCT_t - DEPTH_OCT_s) * smooth_b;
+Q_s += (Q_t - Q_s) * smooth_b;
+RATE_HZ_s += (RATE_HZ_t - RATE_HZ_s) * smooth_b;
+MIX_s += (MIX_t - MIX_s) * smooth_b;
+OUT_GAIN_s += (OUT_GAIN_t - OUT_GAIN_s) * smooth_b;
+
+lfo = sin(phase);
+phase += 2 * $pi * RATE_HZ_s / srate;
+phase >= 2 * $pi ? phase -= 2 * $pi;
+
+fc = CENTER_HZ_s * 2^(DEPTH_OCT_s * lfo);
+fc = min(max(fc, 20), min(18000, srate * 0.45));
+
+g = tan($pi * fc / srate);
+k = 1 / Q_s;
+
+a1 = 1 / (1 + g * (g + k));
+a2 = g * a1;
+a3 = g * a2;
+
+xL = spl0;
+
+v3L = xL - ic2L;
+v1L = a1 * ic1L + a2 * v3L;
+v2L = ic2L + a2 * ic1L + a3 * v3L;
+
+ic1L = 2 * v1L - ic1L;
+ic2L = 2 * v2L - ic2L;
+
+bpL = v1L / max(Q_s, 0.0001);
+
+xR = spl1;
+
+v3R = xR - ic2R;
+v1R = a1 * ic1R + a2 * v3R;
+v2R = ic2R + a2 * ic1R + a3 * v3R;
+
+ic1R = 2 * v1R - ic1R;
+ic2R = 2 * v2R - ic2R;
+
+bpR = v1R / max(Q_s, 0.0001);
+
+spl0 = ((1 - MIX_s) * xL + MIX_s * bpL) * OUT_GAIN_s;
+spl1 = ((1 - MIX_s) * xR + MIX_s * bpR) * OUT_GAIN_s;

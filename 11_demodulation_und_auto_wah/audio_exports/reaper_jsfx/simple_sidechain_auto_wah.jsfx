@@ -1,0 +1,126 @@
+desc:Simple Sidechain Auto Wah
+
+slider1:F_MIN_HZ=350<80,5000,1:sqr>f_min wah frequency (Hz)
+slider2:F_MAX_HZ=2500<100,8000,1:sqr>f_max wah frequency (Hz)
+slider3:Q=6<0.5,20,0.1>resonance / Q
+slider4:ATTACK_MS=5<0.1,500,0.1:sqr>tau_a attack time (ms)
+slider5:RELEASE_MS=100<1,2000,1:sqr>tau_r release time (ms)
+slider6:SC_GAIN_DB=0<-24,36,0.1>sidechain gain (dB)
+slider7:MIX=1<0,1,0.01>wet mix
+slider8:OUT_DB=0<-24,12,0.1>output (dB)
+
+in_pin:audio left input
+in_pin:audio right input
+in_pin:sidechain left input
+in_pin:sidechain right input
+out_pin:left output
+out_pin:right output
+
+@init
+ic1L = 0;
+ic2L = 0;
+ic1R = 0;
+ic2R = 0;
+env = 0;
+
+smooth_ms = 10;
+smooth_a = exp(-1 / (0.001 * smooth_ms * srate));
+smooth_b = 1 - smooth_a;
+
+F_MIN_HZ_t = F_MIN_HZ;
+F_MAX_HZ_t = F_MAX_HZ;
+Q_t = Q;
+ATTACK_MS_t = ATTACK_MS;
+RELEASE_MS_t = RELEASE_MS;
+SC_GAIN_t = 10^(SC_GAIN_DB / 20);
+MIX_t = MIX;
+OUT_GAIN_t = 10^(OUT_DB / 20);
+
+F_MIN_HZ_s = F_MIN_HZ_t;
+F_MAX_HZ_s = F_MAX_HZ_t;
+Q_s = Q_t;
+ATTACK_MS_s = ATTACK_MS_t;
+RELEASE_MS_s = RELEASE_MS_t;
+SC_GAIN_s = SC_GAIN_t;
+MIX_s = MIX_t;
+OUT_GAIN_s = OUT_GAIN_t;
+
+@slider
+F_MIN_HZ_t = min(max(F_MIN_HZ, 80), min(5000, srate * 0.45));
+F_MAX_HZ_t = min(max(F_MAX_HZ, 100), min(8000, srate * 0.45));
+Q_t = min(max(Q, 0.5), 20);
+ATTACK_MS_t = min(max(ATTACK_MS, 0.1), 500);
+RELEASE_MS_t = min(max(RELEASE_MS, 1), 2000);
+SC_GAIN_t = 10^(SC_GAIN_DB / 20);
+MIX_t = min(max(MIX, 0), 1);
+OUT_GAIN_t = 10^(OUT_DB / 20);
+
+@sample
+F_MIN_HZ_s += (F_MIN_HZ_t - F_MIN_HZ_s) * smooth_b;
+F_MAX_HZ_s += (F_MAX_HZ_t - F_MAX_HZ_s) * smooth_b;
+Q_s += (Q_t - Q_s) * smooth_b;
+ATTACK_MS_s += (ATTACK_MS_t - ATTACK_MS_s) * smooth_b;
+RELEASE_MS_s += (RELEASE_MS_t - RELEASE_MS_s) * smooth_b;
+SC_GAIN_s += (SC_GAIN_t - SC_GAIN_s) * smooth_b;
+MIX_s += (MIX_t - MIX_s) * smooth_b;
+OUT_GAIN_s += (OUT_GAIN_t - OUT_GAIN_s) * smooth_b;
+
+xL = spl0;
+xR = spl1;
+
+// Sidechain input on REAPER channels 3/4.
+sc = 0.5 * (spl2 + spl3);
+
+// Full-wave detector and attack/release envelope follower:
+// d[n] = |x_sc[n]| * gain
+// y[n] = (1 - g[n]) d[n] + g[n] y[n-1]
+d = min(abs(sc) * SC_GAIN_s, 1);
+
+attack_a = exp(-1 / (srate * ATTACK_MS_s * 0.001));
+release_a = exp(-1 / (srate * RELEASE_MS_s * 0.001));
+g_env = d > env ? attack_a : release_a;
+env = (1 - g_env) * d + g_env * env;
+env_norm = min(max(env, 0), 1);
+
+// Logarithmic wah mapping:
+// f_c[n] = f_min * (f_max/f_min)^env[n]
+f_low = min(F_MIN_HZ_s, F_MAX_HZ_s);
+f_high = max(F_MIN_HZ_s, F_MAX_HZ_s);
+fc = f_low * (f_high / f_low)^env_norm;
+fc = min(max(fc, 20), min(18000, srate * 0.45));
+
+// TPT state-variable bandpass filter.
+g = tan($pi * fc / srate);
+k = 1 / Q_s;
+
+a1 = 1 / (1 + g * (g + k));
+a2 = g * a1;
+a3 = g * a2;
+
+// Left channel
+v3L = xL - ic2L;
+v1L = a1 * ic1L + a2 * v3L;
+v2L = ic2L + a2 * ic1L + a3 * v3L;
+
+ic1L = 2 * v1L - ic1L;
+ic2L = 2 * v2L - ic2L;
+
+bpL = v1L;
+
+// Right channel
+v3R = xR - ic2R;
+v1R = a1 * ic1R + a2 * v3R;
+v2R = ic2R + a2 * ic1R + a3 * v3R;
+
+ic1R = 2 * v1R - ic1R;
+ic2R = 2 * v2R - ic2R;
+
+bpR = v1R;
+
+spl0 = ((1 - MIX_s) * xL + MIX_s * bpL) * OUT_GAIN_s;
+spl1 = ((1 - MIX_s) * xR + MIX_s * bpR) * OUT_GAIN_s;
+
+// Consume the sidechain channels. They control the envelope only and should
+// not pass through to later FX or accidental track output routing.
+spl2 = 0;
+spl3 = 0;

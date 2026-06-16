@@ -1,0 +1,150 @@
+desc:Simple Rotary Loudspeaker
+
+slider1:SPEED=1<0,2,1{Manual,Chorale,Tremolo}>speed
+slider2:F_ROT_HZ=0.8<0.05,12,0.01:sqr>f_m rotation frequency (Hz)
+slider3:BASE_DELAY_MS=10<1,40,0.1>M base delay (ms)
+slider4:DEPTH_MS=0.6<0,5,0.01>D Doppler depth (ms)
+slider5:AM_DEPTH=1<0,1,0.01>alpha intensity depth
+slider6:CROSS_GAIN=0.7<0,1,0.01>c stereo cross gain
+slider7:RAMP_MS=1200<10,5000,1:sqr>speed ramp time (ms)
+slider8:OUT_DB=-3<-24,12,0.1>output (dB)
+
+in_pin:left input
+in_pin:right input
+out_pin:left output
+out_pin:right output
+
+@init
+// Simplified Zolzer/Disch rotary loudspeaker model, matching Fig. 3.13:
+// one input, two opposite variable delay lines, synchronous intensity
+// modulation, and 0.7-style stereo cross mixing.
+//
+// s[n] = sin(omega_m nT)
+//
+// d_A[n] = M + D * s[n]
+// d_B[n] = M - D * s[n]
+//
+// u_A[n] = (1 - alpha * s[n]) * x[n - d_A[n]]
+// u_B[n] = (1 + alpha * s[n]) * x[n - d_B[n]]
+//
+// y_L[n] = u_A[n] + c * u_B[n]
+// y_R[n] = c * u_A[n] + u_B[n]
+
+MAX_DELAY_SAMPLES = 65536;
+BUF_A = 0;
+BUF_B = MAX_DELAY_SAMPLES;
+
+write_pos = 0;
+phase = 0;
+
+smooth_ms = 10;
+smooth_a = exp(-1 / (0.001 * smooth_ms * srate));
+smooth_b = 1 - smooth_a;
+
+SPEED_i = floor(SPEED + 0.5);
+SPEED_last = -1;
+
+F_ROT_HZ_t = F_ROT_HZ;
+BASE_DELAY_MS_t = BASE_DELAY_MS;
+DEPTH_MS_t = DEPTH_MS;
+AM_DEPTH_t = AM_DEPTH;
+CROSS_GAIN_t = CROSS_GAIN;
+RAMP_MS_t = RAMP_MS;
+OUT_GAIN_t = 10^(OUT_DB / 20);
+
+F_ROT_HZ_s = F_ROT_HZ_t;
+BASE_DELAY_MS_s = BASE_DELAY_MS_t;
+DEPTH_MS_s = DEPTH_MS_t;
+AM_DEPTH_s = AM_DEPTH_t;
+CROSS_GAIN_s = CROSS_GAIN_t;
+RAMP_MS_s = RAMP_MS_t;
+OUT_GAIN_s = OUT_GAIN_t;
+
+function read_delay(buffer_base, delay_samples)
+local(read_pos, i0, i1, frac, y)
+(
+    delay_samples = min(max(delay_samples, 1), MAX_DELAY_SAMPLES - 2);
+    read_pos = write_pos - delay_samples;
+    read_pos < 0 ? read_pos += MAX_DELAY_SAMPLES;
+
+    i0 = floor(read_pos);
+    frac = read_pos - i0;
+    i1 = i0 + 1;
+    i1 >= MAX_DELAY_SAMPLES ? i1 -= MAX_DELAY_SAMPLES;
+
+    y = (1 - frac) * buffer_base[i0] + frac * buffer_base[i1];
+    y;
+);
+
+@slider
+SPEED_i = floor(min(max(SPEED, 0), 2) + 0.5);
+
+SPEED_i != SPEED_last ? (
+    SPEED_i == 1 ? (
+        // Chorale: inside the 15-120 rpm slow range from Disch/Zolzer.
+        F_ROT_HZ = 0.8;
+        RAMP_MS = 1200;
+    ) : (
+        SPEED_i == 2 ? (
+            // Tremolo: inside the 300-498 rpm fast range from Disch/Zolzer.
+            F_ROT_HZ = 6.7;
+            RAMP_MS = 900;
+        );
+    );
+    SPEED_last = SPEED_i;
+    sliderchange(2 + 64);
+);
+
+F_ROT_HZ_t = min(max(F_ROT_HZ, 0.05), 12);
+BASE_DELAY_MS_t = min(max(BASE_DELAY_MS, 1), 40);
+DEPTH_MS_t = min(max(DEPTH_MS, 0), 5);
+AM_DEPTH_t = min(max(AM_DEPTH, 0), 1);
+CROSS_GAIN_t = min(max(CROSS_GAIN, 0), 1);
+RAMP_MS_t = min(max(RAMP_MS, 10), 5000);
+OUT_GAIN_t = 10^(OUT_DB / 20);
+
+@sample
+RAMP_MS_s += (RAMP_MS_t - RAMP_MS_s) * smooth_b;
+ramp_a = exp(-1 / (0.001 * RAMP_MS_s * srate));
+ramp_b = 1 - ramp_a;
+
+F_ROT_HZ_s += (F_ROT_HZ_t - F_ROT_HZ_s) * ramp_b;
+BASE_DELAY_MS_s += (BASE_DELAY_MS_t - BASE_DELAY_MS_s) * smooth_b;
+DEPTH_MS_s += (DEPTH_MS_t - DEPTH_MS_s) * smooth_b;
+AM_DEPTH_s += (AM_DEPTH_t - AM_DEPTH_s) * smooth_b;
+CROSS_GAIN_s += (CROSS_GAIN_t - CROSS_GAIN_s) * smooth_b;
+OUT_GAIN_s += (OUT_GAIN_t - OUT_GAIN_s) * smooth_b;
+
+// The teaching model is mono-in / stereo-out.
+x = 0.5 * (spl0 + spl1);
+
+BUF_A[write_pos] = x;
+BUF_B[write_pos] = x;
+
+s = sin(phase);
+
+base_samples = BASE_DELAY_MS_s * 0.001 * srate;
+depth_samples = min(DEPTH_MS_s * 0.001 * srate, base_samples - 1);
+
+delayA = base_samples + depth_samples * s;
+delayB = base_samples - depth_samples * s;
+
+xA = read_delay(BUF_A, delayA);
+xB = read_delay(BUF_B, delayB);
+
+uA = (1 - AM_DEPTH_s * s) * xA;
+uB = (1 + AM_DEPTH_s * s) * xB;
+
+// Fixed normalization keeps the didactic 1 +/- sin topology controllable.
+norm = 0.5 / (1 + CROSS_GAIN_s);
+yL = norm * (uA + CROSS_GAIN_s * uB);
+yR = norm * (CROSS_GAIN_s * uA + uB);
+
+phase += 2 * $pi * F_ROT_HZ_s / srate;
+phase >= 2 * $pi ? phase -= 2 * $pi;
+
+write_pos += 1;
+write_pos >= MAX_DELAY_SAMPLES ? write_pos = 0;
+
+spl0 = yL * OUT_GAIN_s;
+spl1 = yR * OUT_GAIN_s;

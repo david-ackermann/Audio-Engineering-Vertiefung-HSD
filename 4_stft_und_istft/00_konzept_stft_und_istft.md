@@ -6,30 +6,30 @@ Die Studierenden sollen am Ende verstehen:
 
 - warum ein nicht-binzentrierter Ton im endlichen DFT-Block Leakage erzeugt
 - warum Fensterung keine Anzeigeoption, sondern eine reale Gewichtung des Zeitblocks ist
-- wie Rechteck-, Hann- und Hamming-Fenster die Energieverteilung im Spektrum veraendern
+- wie Rechteck-, Hann- und Hamming-Fenster die Energieverteilung im Spektrum verändern
 - dass die STFT keine neue Mathematik, sondern eine fortgesetzte Block-DFT ist
-- wie aus Frame, Fensterlaenge und Hop Size eine Zeit-Frequenz-Darstellung entsteht
+- wie aus Frame, Fensterlänge und Hop Size eine Zeit-Frequenz-Darstellung entsteht
 - warum das Spektrogramm nur die Betragssicht auf komplexe STFT-Koeffizienten ist
-- wie Fensterform, Fensterlaenge und Hop Size das Bild veraendern
-- wie die iSTFT pro Frame in den Zeitbereich zurueckfuehrt
-- warum Rekonstruktion nicht an fehlendem Leakage scheitert, sondern an vollstaendigen Koeffizienten, passender Fensterung und korrektem Overlap-Add haengt
-- wie STFT-Parameter aus einer Fenster-Skizze abgelesen werden koennen
+- wie Fensterform, Fensterlänge und Hop Size das Bild verändern
+- wie die iSTFT pro Frame in den Zeitbereich zurückführt
+- warum Rekonstruktion nicht an fehlendem Leakage scheitert, sondern an vollständigen Koeffizienten, passender Fensterung und korrektem Overlap-Add hängt
+- wie STFT-Parameter aus einer Fenster-Skizze abgelesen werden können
 
 ## Didaktische Rolle im Gesamtaufbau
 
 Vorlesung 4 beginnt dort, wo Vorlesung 3 jetzt endet: Die DFT eines einzelnen Blocks ist verstanden, aber der off-bin Fall ist noch offen. Damit kann Leakage ruhig und ohne Zeitdruck als Eigenschaft endlicher Beobachtung behandelt werden.
 
-Danach wird dieselbe Blocklogik auf viele verschobene Bloecke erweitert:
+Danach wird dieselbe Blocklogik auf viele verschobene Blöcke erweitert:
 
 - ein einzelner Beobachtungsblock wird mit der DFT analysiert
-- ein nicht-binzentrierter Inhalt verteilt Energie ueber mehrere Bins
-- die Fensterform veraendert diese Verteilung
+- ein nicht-binzentrierter Inhalt verteilt Energie über mehrere Bins
+- die Fensterform verändert diese Verteilung
 - viele verschobene Beobachtungsbloecke ergeben die STFT
 - die Betragssicht dieser Koeffizienten ergibt das Spektrogramm
-- aus denselben komplexen Koeffizienten fuehrt die iSTFT zurueck in lokale Zeitbloecke
-- Overlap-Add setzt diese Bloecke wieder zu einem globalen Signal zusammen
+- aus denselben komplexen Koeffizienten führt die iSTFT zurück in lokale Zeitbloecke
+- Overlap-Add setzt diese Blöcke wieder zu einem globalen Signal zusammen
 
-Diese Vorlesung schliesst die Analyseperspektive ab. Erst danach beginnt in Vorlesung 5 die Systemsicht.
+Diese Vorlesung schließt die Analyseperspektive ab. Erst danach beginnt in Vorlesung 5 die Systemsicht.
 
 ## Mathematischer Kern
 
@@ -52,7 +52,7 @@ $$
 $$
 \begin{aligned}
 f_0 &= k_0 \Delta f &&\to \text{konzentrierter Bin-Fall} \\
-f_0 &\neq k \Delta f &&\to \text{Energieverteilung ueber mehrere Bins}
+f_0 &\neq k \Delta f &&\to \text{Energieverteilung über mehrere Bins}
 \end{aligned}
 $$
 
@@ -94,7 +94,7 @@ $$
 
 Overlap-Add:
 
-Der lokale Index $\ell$ eines Frames wird beim Zuruecksetzen in das globale Signal durch
+Der lokale Index $\ell$ eines Frames wird beim Zurücksetzen in das globale Signal durch
 
 $$
 \ell = n - mH
@@ -116,7 +116,7 @@ s[n]
 \sum_m \tilde{x}_m[n-mH]\,w[n-mH]
 $$
 
-Diese Gleichung ist die allgemeinere Schreibweise fuer die rohe Overlap-Add-Summe. Erst wenn man einsetzt, dass die iDFT den analysierten, bereits gefensterten Block zurueckliefert,
+Diese Gleichung ist die allgemeinere Schreibweise für die rohe Overlap-Add-Summe. Erst wenn man einsetzt, dass die iDFT den analysierten, bereits gefensterten Block zurückliefert,
 
 $$
 \tilde{x}_m[n-mH]
@@ -124,7 +124,7 @@ $$
 x[n]\,w[n-mH],
 $$
 
-erhaelt man fuer einen einzelnen Frame-Beitrag:
+erhaelt man für einen einzelnen Frame-Beitrag:
 
 $$
 y_m[n-mH]
@@ -132,7 +132,7 @@ y_m[n-mH]
 x[n] w^2[n-mH]
 $$
 
-Damit folgt fuer die rohe Summe:
+Damit folgt für die rohe Summe:
 
 $$
 s[n] = x[n] \sum_m w^2[n-mH]
@@ -163,13 +163,13 @@ $$
 
 1. Block 1A: Off-Bin-Analyzerlogik mit Rechteckfenster
 2. Block 1B: gleicher Fall mit Hamming-Fenster
-3. Block 1C: spektrale Erklaerung von Leakage
-4. Block 1D: Fenstervergleich fuer denselben Off-Bin-Ton
+3. Block 1C: spektrale Erklärung von Leakage
+4. Block 1D: Fenstervergleich für denselben Off-Bin-Ton
 5. Block 2A: bewegte Block-DFT mit Rechteckfenster
 6. Block 2B: gleicher nicht-binzentrierter Analysefall mit Rechteck- und Hann-Fenster
-7. Block 2C: Zeit-Frequenz-Kompromiss ueber die Fensterlaenge
+7. Block 2C: Zeit-Frequenz-Kompromiss über die Fensterlänge
 8. Block 2D: Hop Size als Dichte der Zeitabtastung
-9. Block 3A: iSTFT als Rueckweg pro Frame
+9. Block 3A: iSTFT als Rückweg pro Frame
 10. Block 3B: Zero Padding, Overlap-Add und Rekonstruktion des gesamten Signals
 11. Block 4: Hausaufgaben zu STFT-Parametern, Leakage und iSTFT
 
@@ -184,14 +184,14 @@ Didaktisch wichtig ist:
 - zuerst beim diskreten Analyzerbild bleiben
 - on-bin und off-bin mit gleicher Blocklaenge vergleichen
 - Fensterung als Multiplikation im Zeitbereich zeigen
-- erst danach die spektrale Huelle als zweite Erklaerungsebene einfuehren
+- erst danach die spektrale Huelle als zweite Erklärungsebene einführen
 
 ### Unterbloecke
 
 - `1A`: Off-Bin-Analyzerlogik mit Rechteckfenster
 - `1B`: Hamming-Fenster als paralleler Analysefall
-- `1C`: spektrale Leakage-Erklaerung
-- `1D`: Fenstervergleich fuer denselben Off-Bin-Ton
+- `1C`: spektrale Leakage-Erklärung
+- `1D`: Fenstervergleich für denselben Off-Bin-Ton
 
 ## Block 2: STFT als fortgesetzte Blockanalyse
 
@@ -204,14 +204,14 @@ Didaktisch wichtig ist:
 - jeder Frame ist wieder ein endlicher, gefensterter Block
 - Leakage verschwindet in der STFT nicht, sondern erscheint lokal in jedem Frame
 - das Spektrogramm ist nur die geordnete Darstellung vieler lokaler Spektren
-- Fensterlaenge bestimmt das lokale Frequenzraster, Hop Size die zeitliche Abtastung der Analyse
+- Fensterlänge bestimmt das lokale Frequenzraster, Hop Size die zeitliche Abtastung der Analyse
 
 ### Unterbloecke
 
 - `2A`: Rechteckfenster als erster bewegter Signalausschnitt
-- `2B`: gleiche Bildlogik fuer Rechteck- und Hann-Fenster bei nicht-binzentrierten Frequenzen
-- `2C`: kurzes gegen langes Fenster fuer Zeit- und Frequenzaufloesung
-- `2D`: grosse gegen kleine Hop Size bei gleicher Fensterlaenge
+- `2B`: gleiche Bildlogik für Rechteck- und Hann-Fenster bei nicht-binzentrierten Frequenzen
+- `2C`: kurzes gegen langes Fenster für Zeit- und Frequenzaufloesung
+- `2D`: große gegen kleine Hop Size bei gleicher Fensterlänge
 
 ## Block 3: iSTFT und Overlap-Add
 
@@ -219,18 +219,18 @@ Didaktisch wichtig ist:
 
 > Wenn in jedem Frame Leakage sichtbar ist, warum kann die STFT dann trotzdem korrekt rekonstruiert werden?
 
-Die Antwort sollte nicht mit dem Spektrogramm beginnen, sondern mit den vollstaendigen komplexen STFT-Koeffizienten.
+Die Antwort sollte nicht mit dem Spektrogramm beginnen, sondern mit den vollständigen komplexen STFT-Koeffizienten.
 
 ### Kerngedanke
 
 - die iSTFT arbeitet nicht mit dem Betragsspektrogramm allein
-- sie arbeitet mit den vollstaendigen komplexen Werten $X[m,k]$
+- sie arbeitet mit den vollständigen komplexen Werten $X[m,k]$
 - Leakage verteilt Energie im Frame-Spektrum, zerstoert aber nicht automatisch die Information
-- fuer die globale Rekonstruktion muessen Fenster, Hop Size und Normierung zusammenpassen
+- für die globale Rekonstruktion müssen Fenster, Hop Size und Normierung zusammenpassen
 
 ### Herleitung der iSTFT
 
-Fuer die Herleitung werden zwei Indizes getrennt:
+Für die Herleitung werden zwei Indizes getrennt:
 
 - $\ell$ ist der lokale Index innerhalb eines Frames, also $\ell=0,\ldots,N-1$
 - $n$ ist der globale Sample-Index im Gesamtsignal
@@ -257,13 +257,13 @@ x[mH+\ell]\,w[\ell]\,
 e^{-j2\pi k\ell/N}
 $$
 
-Hier ist $m$ der Frame-Index, $H$ die Hop Size, $N$ die DFT-Laenge und $w[\ell]$ das Analysefenster. Der lokale Analyseblock ist:
+Hier ist $m$ der Frame-Index, $H$ die Hop Size, $N$ die DFT-Länge und $w[\ell]$ das Analysefenster. Der lokale Analyseblock ist:
 
 $$
 x_m[\ell] = x[mH+\ell]\,w[\ell]
 $$
 
-Die iDFT fuehrt diesen Frame wieder in den lokalen Zeitbereich zurueck:
+Die iDFT führt diesen Frame wieder in den lokalen Zeitbereich zurück:
 
 $$
 \tilde{x}_m[\ell]
@@ -282,7 +282,7 @@ $$
 
 Didaktisch wichtig: Die iDFT liefert noch nicht den ungefensterten Originalblock, sondern den lokal gefensterten Block.
 
-Wenn fuer die Synthese wieder dasselbe Fenster verwendet wird, entsteht:
+Wenn für die Synthese wieder dasselbe Fenster verwendet wird, entsteht:
 
 $$
 y_m[\ell] = \tilde{x}_m[\ell]\,w[\ell]
@@ -296,7 +296,7 @@ $$
 
 Das Quadrat entsteht also nicht durch die Fouriertransformation selbst, sondern durch die Kombination aus Analysefenster und Synthesefenster.
 
-Anschliessend wird jeder lokale Beitrag zurueck an seine globale Position $mH$ geschoben. Fuer ein globales Sample $n$ ist der dazugehoerige lokale Index im Frame $m$:
+Anschließend wird jeder lokale Beitrag zurück an seine globale Position $mH$ geschoben. Für ein globales Sample $n$ ist der dazugehörige lokale Index im Frame $m$:
 
 $$
 \ell = n - mH
@@ -336,7 +336,7 @@ $$
 x[n]\,w[n-mH],
 $$
 
-folgt fuer jeden Frame-Beitrag:
+folgt für jeden Frame-Beitrag:
 
 $$
 y_m[n-mH]
@@ -344,7 +344,7 @@ y_m[n-mH]
 x[n]\,w^2[n-mH]
 $$
 
-Damit steckt im rohen Overlap-Add-Signal noch das globale Gesamtgewicht aller ueberlappenden Fenster:
+Damit steckt im rohen Overlap-Add-Signal noch das globale Gesamtgewicht aller überlappenden Fenster:
 
 $$
 s[n]
@@ -369,9 +369,9 @@ Dieses Gewicht beschreibt, wie stark das Sample $x[n]$ nach Analysefensterung, S
 Anschaulich:
 
 - liegt ein Sample nur in einem Fenster, bekommt es nur dessen lokales Gewicht
-- liegt es in mehreren ueberlappenden Fenstern, addieren sich die Fenstergewichte
+- liegt es in mehreren überlappenden Fenstern, addieren sich die Fenstergewichte
 - am Signalrand ist das Gewicht ohne Zero Padding oft kleiner
-- im inneren Bereich kann das Gewicht konstant sein, wenn Fensterform und Hop Size passend gewaehlt sind
+- im inneren Bereich kann das Gewicht konstant sein, wenn Fensterform und Hop Size passend gewählt sind
 
 Die normierte Rekonstruktion lautet deshalb:
 
@@ -393,29 +393,29 @@ a[n]
 }
 $$
 
-Der zentrale Satz fuer die Folien:
+Der zentrale Satz für die Folien:
 
-> Die iSTFT setzt nicht einfach lokale iDFT-Bloecke zusammen. Sie setzt jeden lokalen Block $y_m[\ell]$ an seine globale Position $n=mH+\ell$, addiert die ueberlappenden Beitraege zu $s[n]$ und korrigiert danach durch das globale Fenstergewicht $a[n]$. Dieses Fenstergewicht haengt nur von Fensterform, Fensterlaenge und Hop Size ab, nicht vom Signal.
+> Die iSTFT setzt nicht einfach lokale iDFT-Blöcke zusammen. Sie setzt jeden lokalen Block $y_m[\ell]$ an seine globale Position $n=mH+\ell$, addiert die überlappenden Beitraege zu $s[n]$ und korrigiert danach durch das globale Fenstergewicht $a[n]$. Dieses Fenstergewicht hängt nur von Fensterform, Fensterlänge und Hop Size ab, nicht vom Signal.
 
 ### Unterbloecke
 
-- `3A`: ein einzelner Frame wird per iDFT in einen lokalen Zeitblock zurueckgefuehrt
-- `3B`: Zero Padding an den Signalraendern erlaubt eine saubere Overlap-Add-Rekonstruktion des gesamten beobachteten Signals
+- `3A`: ein einzelner Frame wird per iDFT in einen lokalen Zeitblock zurückgeführt
+- `3B`: Zero Padding an den Signalrändern erlaubt eine saubere Overlap-Add-Rekonstruktion des gesamten beobachteten Signals
 
 ## Block 4: Hausaufgaben
 
 ### Kerngedanke
 
-> Die zentralen STFT-Parameter sollen nicht nur aus Formeln, sondern auch aus Skizzen und Signalbeobachtungen abgelesen werden koennen.
+> Die zentralen STFT-Parameter sollen nicht nur aus Formeln, sondern auch aus Skizzen und Signalbeobachtungen abgelesen werden können.
 
 Die Hausaufgaben sichern die Begriffe aus der Vorlesung:
 
-- Fensterlaenge \(N\)
+- Fensterlänge \(N\)
 - Hop Size \(H\)
 - Frame-Start \(n_m=mH\)
-- Ueberlappung \(N-H\)
+- Überlappung \(N-H\)
 - Frequenzraster \(\Delta f=f_s/N\)
-- Rekonstruktion ueber \(s[n]/a[n]\)
+- Rekonstruktion über \(s[n]/a[n]\)
 
 ### Aufgabenreihe
 
@@ -425,20 +425,20 @@ Die Aufgaben sind als Selbstlernphase mit Studierendenfassung und Erwartungshori
 - `Aufgabe 2`: STFT-Fenster auf der \(n\)-Achse einzeichnen, \(n_m=mH\), Endindizes und Spaltendichte
 - `Aufgabe 3`: STFT-Parameter aus einer Hann-Fenster-Skizze rueckwaerts bestimmen
 - `Aufgabe 4`: lokaler Analyseblock eines Klicks, globaler Index \(n_c\), lokaler Fensterindex und breitbandiges STFT-Spektrum
-- `Aufgabe 5`: STFT-Parameter fuer typische Audioanwendungen auswaehlen und begruenden
+- `Aufgabe 5`: STFT-Parameter für typische Audioanwendungen auswählen und begruenden
 
-Zentrale Beziehungen fuer die Aufgaben sind:
+Zentrale Beziehungen für die Aufgaben sind:
 
 $$
 n_m = mH
 $$
 
 $$
-\text{Ueberlappung in Samples} = N-H
+\text{Überlappung in Samples} = N-H
 $$
 
 $$
-\text{Ueberlappung in Prozent}
+\text{Überlappung in Prozent}
 =
 \frac{N-H}{N}\cdot 100\,\%
 $$
@@ -451,39 +451,39 @@ $$
 \Omega_k = \frac{2\pi k}{N}
 $$
 
-## Zeitplan fuer 120 Minuten
+## Zeitplan für 120 Minuten
 
 | Zeit | Abschnitt | Inhalt | mathematischer Fokus | didaktische Funktion |
 |---|---|---|---|---|
-| 0-8 min | Rueckbezug | einzelner DFT-Block aus Vorlesung 3, off-bin Leitfrage | $\Delta f$, $f_k$, $X[k]$ | Anschluss sichern |
+| 0-8 min | Rückbezug | einzelner DFT-Block aus Vorlesung 3, off-bin Leitfrage | $\Delta f$, $f_k$, $X[k]$ | Anschluss sichern |
 | 8-28 min | Block 1A/1B | off-bin Fall, Rechteck und Hamming | Multiplikation mit $w[n]$, Binmessung | Leakage als Blockeigenschaft zeigen |
-| 28-42 min | Block 1C/1D | spektrale Leakage-Erklaerung und Fenstervergleich | DFT-Samples eines gefensterten Spektrums | Fensterwirkung einordnen |
+| 28-42 min | Block 1C/1D | spektrale Leakage-Erklärung und Fenstervergleich | DFT-Samples eines gefensterten Spektrums | Fensterwirkung einordnen |
 | 42-58 min | Block 2A | bewegte Block-DFT, Frame, Hop, lokale Spektren | $X[m,k]$ | STFT als fortgesetzte Block-DFT etablieren |
 | 58-70 min | Block 2B | Rechteck/Hann im STFT-Kontext | gleiche STFT-Gleichung, anderes $w[n]$ | Leakage lokal in der STFT lesen |
 | 70-78 min | Pause | kurze Unterbrechung | - | Entlastung |
-| 78-92 min | Block 2C | kurzes gegen langes Fenster | Zeit-Frequenz-Kompromiss ueber $N$ | Aufloesung differenzieren |
+| 78-92 min | Block 2C | kurzes gegen langes Fenster | Zeit-Frequenz-Kompromiss über $N$ | Aufloesung differenzieren |
 | 92-102 min | Block 2D | Hop Size und Zeitabtastung | gleiche Bins, andere Frame-Dichte | Hop vom Frequenzraster trennen |
-| 102-112 min | Block 3A | iSTFT als Rueckweg pro Frame | iDFT eines einzelnen Frames | Analyse und Synthese verbinden |
+| 102-112 min | Block 3A | iSTFT als Rückweg pro Frame | iDFT eines einzelnen Frames | Analyse und Synthese verbinden |
 | 112-120 min | Block 3B | Zero Padding, Fenstersumme, Rekonstruktion | $x_{\mathrm{rec}}[n] = s[n] / a[n]$ | Rekonstruktionsbedingung sichern |
 
-## Typische Verstaendnishuerden
+## Typische Verständnishürden
 
-- off-bin Leakage wird fuer einen Rechenfehler gehalten.
+- off-bin Leakage wird für einen Rechenfehler gehalten.
 - Fensterung wird als Anzeigeoption missverstanden statt als Signaloperation.
-- STFT wird fuer eine voellig neue Analyseart gehalten.
+- STFT wird für eine voellig neue Analyseart gehalten.
 - das Spektrogramm wird mit dem Signal selbst verwechselt.
-- Fensterlaenge und Hop Size werden vermischt.
+- Fensterlänge und Hop Size werden vermischt.
 - dichtere Frames werden vorschnell mit feinerem Frequenzraster gleichgesetzt.
-- iSTFT wird faelschlich als Rueckweg aus dem Betragsspektrogramm verstanden.
+- iSTFT wird faelschlich als Rückweg aus dem Betragsspektrogramm verstanden.
 - perfekte Rekonstruktion wird faelschlich mit "kein Leakage" begruendet.
 
-## Demo-, Hoer- und Python-Einsatz
+## Demo-, Hör- und Python-Einsatz
 
 - Analyzer-Vergleich: on-bin gegen off-bin bei gleicher Blocklaenge
 - Python-Vergleich: Rechteck-, Hann- und Hamming-Fenster bei identischem Ton
-- Spektrogramm-Demo: Sprache oder Drumloop mit kurzer versus langer Fensterlaenge
-- Python-Vergleich: Hop Size bei gleicher Fensterlaenge
-- iSTFT-Demo: ein einzelner Frame zurueck in den Zeitbereich
+- Spektrogramm-Demo: Sprache oder Drumloop mit kurzer versus langer Fensterlänge
+- Python-Vergleich: Hop Size bei gleicher Fensterlänge
+- iSTFT-Demo: ein einzelner Frame zurück in den Zeitbereich
 - Overlap-Add-Demo: Zero Padding und lokale Normierung der Fenstersumme
 
 ## Geplante Export- und Storyboard-Struktur

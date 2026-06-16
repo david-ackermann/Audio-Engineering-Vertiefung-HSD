@@ -2,11 +2,11 @@
 
 Grundlage sind die STFT-Folien mit der Notation \(X[m,k]\), \(\Omega_k = 2\pi k/N\), \(n_m=mH\) und \(t_m=n_m/f_s\) sowie die Aufgabenstruktur der Grundlagen-Aufgabensammlung.
 
-# Teil A: Aufgabenblatt fuer Studierende
+# Teil A: Aufgabenblatt für Studierende
 
 ## Selbstlernphase: Kurzzeit-Fourier-Transformation, Fensterpositionen und Spektrogramme
 
-Nach der Bearbeitung dieser Aufgaben sollen Sie STFT-Parameter ausrechnen, Fensterpositionen im Abtastindex \(n\) einzeichnen, aus einer Fensterdarstellung die zugehoerigen Parameter bestimmen und fuer typische Audio-Engineering-Anwendungen geeignete Analyseparameter begruendet auswaehlen koennen.
+Nach der Bearbeitung dieser Aufgaben sollen Sie STFT-Parameter ausrechnen, Fensterpositionen im Abtastindex \(n\) einzeichnen, aus einer Fensterdarstellung die zugehörigen Parameter bestimmen und für typische Audio-Engineering-Anwendungen geeignete Analyseparameter begruendet auswählen können.
 
 ---
 
@@ -18,7 +18,7 @@ $$
 f_s = 48\,\text{kHz}
 $$
 
-abgetastet. Fuer die DFT eines Analyseblocks wird zunaechst eine Blocklaenge von
+abgetastet. Für die DFT eines Analyseblocks wird zunaechst eine Blocklaenge von
 
 $$
 N = 4800
@@ -28,19 +28,19 @@ Samples verwendet.
 
 (a) Bestimmen Sie die Beobachtungsdauer \(T_\text{obs}\) des Analyseblocks und den Frequenz-Binabstand \(\Delta f\).
 
-(b) Bestimmen Sie den Binabstand der diskreten Kreisfrequenz \(\Delta \Omega\). Berechnen Sie anschliessend fuer \(k=44\) und \(k=100\) jeweils die diskrete Kreisfrequenz \(\Omega_k\) und die zugehoerige Frequenz \(f_k\) in Hz.
+(b) Bestimmen Sie den Binabstand der diskreten Kreisfrequenz \(\Delta \Omega\). Berechnen Sie anschließend für \(k=44\) und \(k=100\) jeweils die diskrete Kreisfrequenz \(\Omega_k\) und die zugehörige Frequenz \(f_k\) in Hz.
 
 (c) Ordnen Sie die beiden Bins aus Teilaufgabe (b) sinnvollen Audiofrequenzen zu. Welche der beiden Frequenzen koennte zu einem Kammerton A bzw. zu einem 1-kHz-Testton passen?
 
-(d) Geben Sie fuer ein reelles Audiosignal den sinnvoll interpretierbaren einseitigen Frequenzbereich der DFT an. Welche Bin-Indizes gehoeren zu diesem Bereich?
+(d) Geben Sie für ein reelles Audiosignal den sinnvoll interpretierbaren einseitigen Frequenzbereich der DFT an. Welche Bin-Indizes gehören zu diesem Bereich?
 
-(e) Der Analyzer wird auf \(N=2400\) Samples umgestellt. Diskutieren Sie, was sich dadurch an Beobachtungsdauer, Frequenzaufloesung und praktischer Nutzbarkeit fuer die Tonhoehenanalyse aendert.
+(e) Der Analyzer wird auf \(N=2400\) Samples umgestellt. Diskutieren Sie, was sich dadurch an Beobachtungsdauer, Frequenzaufloesung und praktischer Nutzbarkeit für die Tonhöhenanalyse ändert.
 
 ---
 
 ## Aufgabe 2: STFT-Fenster auf der \(n\)-Achse einzeichnen
 
-Fuer die Spektrogramm-Analyse einer perkussiven Aufnahme wird eine STFT mit Rechteckfenster verwendet. Das Fenster sei gegeben durch
+Für die Spektrogramm-Analyse einer perkussiven Aufnahme wird eine STFT mit Rechteckfenster verwendet. Das Fenster sei gegeben durch
 
 $$
 w[n] =
@@ -58,7 +58,7 @@ $$
 
 Dabei ist \(H\) die Hop Size, also die Schrittweite zwischen zwei benachbarten STFT-Frames.
 
-(a) Zeichnen Sie auf einer \(n\)-Achse von \(n=0\) bis \(n=2000\) die Fensterpositionen fuer die Frames
+(a) Zeichnen Sie auf einer \(n\)-Achse von \(n=0\) bis \(n=2000\) die Fensterpositionen für die Frames
 
 $$
 m = 0,1,2,3,4
@@ -66,9 +66,9 @@ $$
 
 ein. Markieren Sie jeweils den Startindex \(n_m\) und den Endindex des Fensters.
 
-(b) Berechnen Sie fuer die benachbarten Fenster die Ueberlappung in Samples und in Prozent der Fensterlaenge.
+(b) Berechnen Sie für die benachbarten Fenster die Überlappung in Samples und in Prozent der Fensterlänge.
 
-(c) Berechnen Sie fuer alle fuenf Frames die Startzeit
+(c) Berechnen Sie für alle fuenf Frames die Startzeit
 
 $$
 t_m = \frac{n_m}{f_s}
@@ -76,13 +76,13 @@ $$
 
 in Millisekunden.
 
-(d) Bestimmen Sie, wie viele Spektrogramm-Spalten pro Sekunde entstehen. Erlaeutern Sie kurz, was diese Spaltendichte fuer die zeitliche Darstellung von Transienten bedeutet.
+(d) Bestimmen Sie, wie viele Spektrogramm-Spalten pro Sekunde entstehen. Erlaeutern Sie kurz, was diese Spaltendichte für die zeitliche Darstellung von Transienten bedeutet.
 
 ---
 
 ## Aufgabe 3: STFT-Parameter aus einer Fenster-Skizze bestimmen
 
-Bei der Analyse eines Sprachsignals wird Ihnen folgende vereinfachte Skizze mehrerer ueberlappender Hann-Fenster auf der \(n\)-Achse gegeben. Fuer die Auswertung ist nur relevant, ueber welchem Samplebereich das jeweilige Fenster liegt.
+Bei der Analyse eines Sprachsignals wird Ihnen folgende vereinfachte Skizze mehrerer überlappender Hann-Fenster auf der \(n\)-Achse gegeben. Für die Auswertung ist nur relevant, über welchem Samplebereich das jeweilige Fenster liegt.
 
 $$
 f_s = 48\,\text{kHz}
@@ -103,11 +103,11 @@ D & n = 384 \ldots 895
 \end{array}
 $$
 
-(a) Bestimmen Sie aus der Skizze die Fensterlaenge \(N\), die Hop Size \(H\), die Ueberlappung in Samples und die Ueberlappung in Prozent.
+(a) Bestimmen Sie aus der Skizze die Fensterlänge \(N\), die Hop Size \(H\), die Überlappung in Samples und die Überlappung in Prozent.
 
-(b) Ordnen Sie den Fenstern A bis D die Frame-Indizes \(m\) zu und geben Sie fuer jedes Fenster den Startindex \(n_m\) an.
+(b) Ordnen Sie den Fenstern A bis D die Frame-Indizes \(m\) zu und geben Sie für jedes Fenster den Startindex \(n_m\) an.
 
-(c) Berechnen Sie die Startzeiten \(t_m\) der dargestellten Frames in Millisekunden. Wie gross ist der zeitliche Abstand zweier benachbarter Spektrogramm-Spalten?
+(c) Berechnen Sie die Startzeiten \(t_m\) der dargestellten Frames in Millisekunden. Wie groß ist der zeitliche Abstand zweier benachbarter Spektrogramm-Spalten?
 
 (d) Ein kurzer Klick tritt bei \(n=600\) auf. Bestimmen Sie, in welchen der dargestellten Fensterbereiche dieser Klick enthalten ist. Beschreiben Sie, wie sich dies im Spektrogramm qualitativ auswirken kann.
 
@@ -127,7 +127,7 @@ $$
 
 ## Aufgabe 4: Lokaler Analyseblock und STFT eines Klicks
 
-Sie analysieren ein sehr kurzes digitales Testsignal, das einen einzelnen Klick enthaelt. Das Signal ist ueberall null, ausser bei
+Sie analysieren ein sehr kurzes digitales Testsignal, das einen einzelnen Klick enthält. Das Signal ist überall null, außer bei
 
 $$
 n_c = 20
@@ -139,7 +139,7 @@ $$
 x[20] = 1
 $$
 
-Die STFT wird mit folgenden Parametern durchgefuehrt:
+Die STFT wird mit folgenden Parametern durchgeführt:
 
 $$
 f_s = 8\,\text{kHz}, \qquad N = 16, \qquad H = 8
@@ -161,19 +161,19 @@ $$
 
 ![Aufgabe 4: Klick und STFT-Fenster](png_storyboards/04_hausaufgaben/04_aufgabe_klick_stft_fenster_skizze.png)
 
-(a) Bestimmen Sie fuer die Frames \(m=0,1,2,3,4\) jeweils den Startindex, den Endindex und die Startzeit.
+(a) Bestimmen Sie für die Frames \(m=0,1,2,3,4\) jeweils den Startindex, den Endindex und die Startzeit.
 
-(b) Bestimmen Sie, in welchen Frames der Klick bei \(n_c=20\) enthalten ist. Geben Sie fuer diese Frames jeweils den lokalen Index innerhalb des Analyseblocks an.
+(b) Bestimmen Sie, in welchen Frames der Klick bei \(n_c=20\) enthalten ist. Geben Sie für diese Frames jeweils den lokalen Index innerhalb des Analyseblocks an.
 
-(c) Setzen Sie fuer einen Frame, der den Klick enthaelt, den lokalen Analyseblock in die STFT-Gleichung ein. Beschreiben Sie, wie der Betrag \(|X[m,k]|\) ueber die Frequenz-Bins \(k=0,\ldots,15\) aussieht.
+(c) Setzen Sie für einen Frame, der den Klick enthält, den lokalen Analyseblock in die STFT-Gleichung ein. Beschreiben Sie, wie der Betrag \(|X[m,k]|\) über die Frequenz-Bins \(k=0,\ldots,15\) aussieht.
 
-(d) Erklaeren Sie qualitativ, wie ein einzelner Klick im Spektrogramm erscheint. Vergleichen Sie dies mit einem idealen, ueber viele Frames andauernden 1-kHz-Sinuston bei denselben STFT-Parametern.
+(d) Erklären Sie qualitativ, wie ein einzelner Klick im Spektrogramm erscheint. Vergleichen Sie dies mit einem idealen, über viele Frames andauernden 1-kHz-Sinuston bei denselben STFT-Parametern.
 
 ---
 
-## Aufgabe 5: STFT-Parameter fuer Audioanwendungen auswaehlen
+## Aufgabe 5: STFT-Parameter für Audioanwendungen auswählen
 
-Sie sollen fuer unterschiedliche Analyseaufgaben in einer DAW geeignete STFT-Parameter auswaehlen. Die Abtastfrequenz betraegt
+Sie sollen für unterschiedliche Analyseaufgaben in einer DAW geeignete STFT-Parameter auswählen. Die Abtastfrequenz betraegt
 
 $$
 f_s = 48\,\text{kHz}
@@ -191,15 +191,15 @@ C & 4096 & 1024
 \end{array}
 $$
 
-(a) Berechnen Sie fuer jede Einstellung die Fensterdauer in Millisekunden, die Hop-Dauer in Millisekunden, den Frequenz-Binabstand \(\Delta f\), die Ueberlappung in Prozent und die Anzahl der Spektrogramm-Spalten pro Sekunde.
+(a) Berechnen Sie für jede Einstellung die Fensterdauer in Millisekunden, die Hop-Dauer in Millisekunden, den Frequenz-Binabstand \(\Delta f\), die Überlappung in Prozent und die Anzahl der Spektrogramm-Spalten pro Sekunde.
 
-(b) Waehlen Sie eine geeignete Einstellung fuer die Transientenanalyse einer Snare-Drum-Aufnahme. Begruenden Sie Ihre Wahl.
+(b) Waehlen Sie eine geeignete Einstellung für die Transientenanalyse einer Snare-Drum-Aufnahme. Begruenden Sie Ihre Wahl.
 
-(c) Waehlen Sie eine geeignete Einstellung fuer die Analyse von Tonhoehe und Harmonischen einer Stimme oder Gitarre. Begruenden Sie Ihre Wahl.
+(c) Waehlen Sie eine geeignete Einstellung für die Analyse von Tonhöhe und Harmonischen einer Stimme oder Gitarre. Begruenden Sie Ihre Wahl.
 
 (d) Waehlen Sie eine geeignete Einstellung, um ein stationaeres Netzbrummen im Bereich von 50 Hz bzw. 60 Hz zu erkennen. Begruenden Sie Ihre Wahl.
 
-(e) Diskutieren Sie, warum fuer eine spaetere iSTFT bzw. fuer Time-Stretching-Anwendungen eine sinnvolle Ueberlappung und ein geeignetes Fenster wichtig sind. Beschreiben Sie kurz, was bei zu grosser Hop Size hoerbar problematisch werden kann.
+(e) Diskutieren Sie, warum für eine spätere iSTFT bzw. für Time-Stretching-Anwendungen eine sinnvolle Überlappung und ein geeignetes Fenster wichtig sind. Beschreiben Sie kurz, was bei zu großer Hop Size hörbar problematisch werden kann.
 
 ---
 
@@ -245,7 +245,7 @@ $$
 0{,}001309\,\text{rad/Sample}
 $$
 
-Fuer \(k=44\):
+Für \(k=44\):
 
 $$
 \Omega_{44}
@@ -263,7 +263,7 @@ f_{44}
 440\,\text{Hz}
 $$
 
-Fuer \(k=100\):
+Für \(k=100\):
 
 $$
 \Omega_{100}
@@ -283,7 +283,7 @@ $$
 
 (c) \(k=44\) entspricht \(440\,\text{Hz}\), also dem Kammerton A. \(k=100\) entspricht \(1000\,\text{Hz}\), also dem 1-kHz-Testton.
 
-(d) Fuer ein reelles Signal wird ueblicherweise der einseitige Bereich von
+(d) Für ein reelles Signal wird ueblicherweise der einseitige Bereich von
 
 $$
 0\,\text{Hz} \ldots \frac{f_s}{2}
@@ -295,7 +295,7 @@ $$
 0\,\text{Hz} \ldots 24\,\text{kHz}
 $$
 
-Die zugehoerigen Bin-Indizes sind
+Die zugehörigen Bin-Indizes sind
 
 $$
 k=0 \ldots \frac{N}{2}
@@ -325,15 +325,15 @@ $$
 20\,\text{Hz}
 $$
 
-Die Frequenzaufloesung wird schlechter, weil der Binabstand groesser wird. Dafuer ist der Analyseblock kuerzer, wodurch zeitliche Aenderungen schneller sichtbar werden und die Analyse weniger traege wirkt.
+Die Frequenzaufloesung wird schlechter, weil der Binabstand größer wird. Dafür ist der Analyseblock kuerzer, wodurch zeitliche Aenderungen schneller sichtbar werden und die Analyse weniger traege wirkt.
 
 ### Typische Fehlerquellen
 
-Studierende verwechseln haeufig \(T_\text{obs}=N/f_s\) und \(\Delta f=f_s/N\). Ausserdem wird \(\Omega_k\) oft faelschlich in Hz angegeben, obwohl die Einheit rad/Sample ist. Ein weiterer haeufiger Fehler ist, bei reellen Signalen alle DFT-Bins als unabhaengige positive Frequenzen zu interpretieren.
+Studierende verwechseln haeufig \(T_\text{obs}=N/f_s\) und \(\Delta f=f_s/N\). Ausserdem wird \(\Omega_k\) oft faelschlich in Hz angegeben, obwohl die Einheit rad/Sample ist. Ein weiterer haeufiger Fehler ist, bei reellen Signalen alle DFT-Bins als unabhängige positive Frequenzen zu interpretieren.
 
 ### Didaktischer Kommentar
 
-Die Aufgabe wiederholt die Bruecke zwischen DFT-Raster, diskreter Kreisfrequenz und realer Audiofrequenz. Sie prueft, ob Studierende die abstrakte Groesse \(\Omega_k\) mit einer praktisch hoerbaren Frequenz verbinden koennen.
+Die Aufgabe wiederholt die Bruecke zwischen DFT-Raster, diskreter Kreisfrequenz und realer Audiofrequenz. Sie prueft, ob Studierende die abstrakte Groesse \(\Omega_k\) mit einer praktisch hörbaren Frequenz verbinden können.
 
 Geschaetzte Bearbeitungszeit: 15 Minuten  
 Schwierigkeitsgrad: leicht bis mittel
@@ -344,7 +344,7 @@ Schwierigkeitsgrad: leicht bis mittel
 
 ### Musterloesung
 
-(a) Fuer die Frame-Startindizes gilt:
+(a) Für die Frame-Startindizes gilt:
 
 $$
 n_m = mH
@@ -367,7 +367,7 @@ $$
 (b)
 
 $$
-\text{Ueberlappung}
+\text{Überlappung}
 =
 N-H
 =
@@ -377,7 +377,7 @@ N-H
 $$
 
 $$
-\text{Ueberlappung in Prozent}
+\text{Überlappung in Prozent}
 =
 \frac{720}{960}\cdot 100\,\%
 =
@@ -414,11 +414,11 @@ $$
 200
 $$
 
-Es entstehen also 200 Spektrogramm-Spalten pro Sekunde. Zeitliche Aenderungen koennen alle 5 ms aktualisiert werden. Ein kurzer Transient wird dadurch relativ fein auf der Zeitachse lokalisiert, obwohl jede einzelne Analyse weiterhin ueber ein 20-ms-Fenster erfolgt.
+Es entstehen also 200 Spektrogramm-Spalten pro Sekunde. Zeitliche Aenderungen können alle 5 ms aktualisiert werden. Ein kurzer Transient wird dadurch relativ fein auf der Zeitachse lokalisiert, obwohl jede einzelne Analyse weiterhin über ein 20-ms-Fenster erfolgt.
 
 ### Typische Fehlerquellen
 
-Haeufig wird \(H\) mit der Ueberlappung verwechselt. Ebenso treten Off-by-one-Fehler auf: Bei \(N=960\) und Start \(n_m=0\) endet das Fenster bei \(n=959\), nicht bei \(n=960\). Ausserdem wird die Startzeit des Frames gelegentlich mit der Fenster-Mittenzeit verwechselt.
+Haeufig wird \(H\) mit der Überlappung verwechselt. Ebenso treten Off-by-one-Fehler auf: Bei \(N=960\) und Start \(n_m=0\) endet das Fenster bei \(n=959\), nicht bei \(n=960\). Ausserdem wird die Startzeit des Frames gelegentlich mit der Fenster-Mittenzeit verwechselt.
 
 ### Didaktischer Kommentar
 
@@ -447,7 +447,7 @@ $$
 H = 128 - 0 = 128
 $$
 
-Die Ueberlappung betraegt:
+Die Überlappung betraegt:
 
 $$
 N-H
@@ -522,7 +522,7 @@ D & 384 \ldots 895 & \text{ja}
 \end{array}
 $$
 
-Bei fortgesetzter STFT waere er zusaetzlich auch im naechsten Fenster \(m=4\) mit Bereich \(512 \ldots 1023\) enthalten. Im Spektrogramm kann ein kurzer Klick deshalb ueber mehrere benachbarte Zeitspalten sichtbar werden. Da ein Klick breitbandig ist, erscheint er eher als vertikale, breitbandige Struktur.
+Bei fortgesetzter STFT waere er zusaetzlich auch im nächsten Fenster \(m=4\) mit Bereich \(512 \ldots 1023\) enthalten. Im Spektrogramm kann ein kurzer Klick deshalb über mehrere benachbarte Zeitspalten sichtbar werden. Da ein Klick breitbandig ist, erscheint er eher als vertikale, breitbandige Struktur.
 
 (e) Passend ist Variante 1:
 
@@ -530,11 +530,11 @@ $$
 N=512,\qquad H=128
 $$
 
-Variante 2 haette zwar dieselbe Fensterlaenge, aber nur 50 Prozent Ueberlappung. Variante 3 haette die passende Hop Size, aber eine zu grosse Fensterlaenge.
+Variante 2 haette zwar dieselbe Fensterlänge, aber nur 50 Prozent Überlappung. Variante 3 haette die passende Hop Size, aber eine zu große Fensterlänge.
 
 ### Typische Fehlerquellen
 
-Ein typischer Fehler ist, die Fensterlaenge als 511 statt 512 Samples zu bestimmen. Ausserdem wird aus der Differenz der Fensterenden manchmal faelschlich \(H\) berechnet, obwohl der Abstand der Startindizes massgeblich ist. Bei Teilaufgabe (d) vergessen Studierende oft, dass ein einzelnes Sample wegen der Ueberlappung in mehreren Frames analysiert werden kann.
+Ein typischer Fehler ist, die Fensterlänge als 511 statt 512 Samples zu bestimmen. Ausserdem wird aus der Differenz der Fensterenden manchmal faelschlich \(H\) berechnet, obwohl der Abstand der Startindizes massgeblich ist. Bei Teilaufgabe (d) vergessen Studierende oft, dass ein einzelnes Sample wegen der Überlappung in mehreren Frames analysiert werden kann.
 
 ### Didaktischer Kommentar
 
@@ -603,7 +603,7 @@ $$
 
 Die uebrigen dargestellten Frames enthalten den Klick nicht.
 
-(c) Fuer Frame \(m=1\) gilt lokal:
+(c) Für Frame \(m=1\) gilt lokal:
 
 $$
 x_1[n] =
@@ -627,7 +627,7 @@ $$
 |X[1,k]| = 1
 $$
 
-fuer alle \(k\). Fuer Frame \(m=2\) analog:
+für alle \(k\). Für Frame \(m=2\) analog:
 
 $$
 X[2,k]
@@ -641,7 +641,7 @@ $$
 |X[2,k]| = 1
 $$
 
-fuer alle \(k\). Ein idealer einzelner Sample-Klick besitzt in der DFT betragsmaessig Energie ueber alle Frequenz-Bins.
+für alle \(k\). Ein idealer einzelner Sample-Klick besitzt in der DFT betragsmaessig Energie über alle Frequenz-Bins.
 
 (d)
 
@@ -665,11 +665,11 @@ k
 2
 $$
 
-Im einseitigen Spektrum erscheint er als horizontale Linie bei 1 kHz ueber viele Frames. Im vollstaendigen DFT-Spektrum eines reellen Signals gibt es zusaetzlich die konjugiert-symmetrische Komponente bei \(k=14\). Ein Klick erscheint dagegen als kurzer breitbandiger Impuls ueber viele oder alle Frequenz-Bins und nur in wenigen benachbarten Zeitspalten.
+Im einseitigen Spektrum erscheint er als horizontale Linie bei 1 kHz über viele Frames. Im vollständigen DFT-Spektrum eines reellen Signals gibt es zusaetzlich die konjugiert-symmetrische Komponente bei \(k=14\). Ein Klick erscheint dagegen als kurzer breitbandiger Impuls über viele oder alle Frequenz-Bins und nur in wenigen benachbarten Zeitspalten.
 
 ### Typische Fehlerquellen
 
-Studierende setzen in die STFT-Gleichung haeufig den globalen Index \(n_c=20\) ein, obwohl innerhalb der Summe der lokale Blockindex \(n=0,\ldots,N-1\) verwendet wird. Ausserdem wird oft angenommen, dass ein Klick nur hohe Frequenzen enthaelt. Der ideale Sample-Impuls ist jedoch betragsmaessig breitbandig.
+Studierende setzen in die STFT-Gleichung haeufig den globalen Index \(n_c=20\) ein, obwohl innerhalb der Summe der lokale Blockindex \(n=0,\ldots,N-1\) verwendet wird. Ausserdem wird oft angenommen, dass ein Klick nur hohe Frequenzen enthält. Der ideale Sample-Impuls ist jedoch betragsmaessig breitbandig.
 
 ### Didaktischer Kommentar
 
@@ -680,19 +680,19 @@ Schwierigkeitsgrad: mittel
 
 ---
 
-## Aufgabe 5: STFT-Parameter fuer Audioanwendungen auswaehlen
+## Aufgabe 5: STFT-Parameter für Audioanwendungen auswählen
 
 ### Musterloesung
 
-(a) Fuer alle Einstellungen gilt:
+(a) Für alle Einstellungen gilt:
 
 $$
-\text{Ueberlappung}
+\text{Überlappung}
 =
 \frac{N-H}{N}\cdot 100\,\%
 $$
 
-Da jeweils \(H=N/4\), betraegt die Ueberlappung ueberall 75 Prozent.
+Da jeweils \(H=N/4\), betraegt die Überlappung überall 75 Prozent.
 
 $$
 \begin{array}{c|c|c|c|c|c}
@@ -720,21 +720,21 @@ C & 46{,}875
 \end{array}
 $$
 
-(b) Fuer die Transientenanalyse einer Snare-Drum ist Einstellung A gut geeignet. Die Fensterdauer ist kurz und die Hop-Dauer sehr klein. Dadurch werden schnelle zeitliche Ereignisse fein aufgeloest. Die Frequenzaufloesung ist zwar grob, das ist fuer die genaue zeitliche Lokalisierung eines Snare-Transienten aber meist weniger kritisch.
+(b) Für die Transientenanalyse einer Snare-Drum ist Einstellung A gut geeignet. Die Fensterdauer ist kurz und die Hop-Dauer sehr klein. Dadurch werden schnelle zeitliche Ereignisse fein aufgeloest. Die Frequenzaufloesung ist zwar grob, das ist für die genaue zeitliche Lokalisierung eines Snare-Transienten aber meist weniger kritisch.
 
-(c) Fuer Stimme oder Gitarre ist Einstellung B haeufig ein sinnvoller Kompromiss. Die Frequenzaufloesung ist deutlich besser als bei A, waehrend zeitliche Aenderungen, Vibrato oder Artikulation noch brauchbar sichtbar bleiben. Fuer sehr genaue Analyse tiefer Grundfrequenzen kann auch C begruendet werden, allerdings mit schlechterer Zeitaufloesung.
+(c) Für Stimme oder Gitarre ist Einstellung B haeufig ein sinnvoller Kompromiss. Die Frequenzaufloesung ist deutlich besser als bei A, während zeitliche Aenderungen, Vibrato oder Artikulation noch brauchbar sichtbar bleiben. Für sehr genaue Analyse tiefer Grundfrequenzen kann auch C begruendet werden, allerdings mit schlechterer Zeitaufloesung.
 
-(d) Fuer Netzbrummen bei 50 Hz bzw. 60 Hz ist Einstellung C am besten geeignet. Der Binabstand von ca. \(11{,}72\,\text{Hz}\) ist deutlich feiner als bei A oder B. Dadurch lassen sich stationaere tieffrequente Stoerungen besser erkennen. Einstellung B kann 50/60 Hz nur grob lokalisieren; Einstellung A ist dafuer zu grob.
+(d) Für Netzbrummen bei 50 Hz bzw. 60 Hz ist Einstellung C am besten geeignet. Der Binabstand von ca. \(11{,}72\,\text{Hz}\) ist deutlich feiner als bei A oder B. Dadurch lassen sich stationaere tieffrequente Stoerungen besser erkennen. Einstellung B kann 50/60 Hz nur grob lokalisieren; Einstellung A ist dafür zu grob.
 
-(e) Bei einer iSTFT bzw. bei Time-Stretching-Anwendungen muessen die Fenster sinnvoll ueberlappen, damit beim Zusammensetzen der Frames keine starken Pegelschwankungen, Luecken oder Blockartefakte entstehen. Bei einer zu grossen Hop Size, etwa ohne ausreichende Ueberlappung, koennen Fensterkanten und zeitliche Diskontinuitaeten hoerbar werden. Fuer Hann-Fenster werden in der Praxis geeignete Ueberlappungs- und Normalisierungsbedingungen verwendet, damit das Overlap-Add-Verfahren stabil rekonstruiert. Didaktische Anmerkung: In einzelnen Folien steht "Hope Size"; gemeint ist fachlich die Hop Size, also die Frame-Schrittweite in Samples.
+(e) Bei einer iSTFT bzw. bei Time-Stretching-Anwendungen müssen die Fenster sinnvoll überlappen, damit beim Zusammensetzen der Frames keine starken Pegelschwankungen, Luecken oder Blockartefakte entstehen. Bei einer zu großen Hop Size, etwa ohne ausreichende Überlappung, können Fensterkanten und zeitliche Diskontinuitaeten hörbar werden. Für Hann-Fenster werden in der Praxis geeignete Überlappungs- und Normalisierungsbedingungen verwendet, damit das Overlap-Add-Verfahren stabil rekonstruiert. Didaktische Anmerkung: In einzelnen Folien steht "Hope Size"; gemeint ist fachlich die Hop Size, also die Frame-Schrittweite in Samples.
 
 ### Typische Fehlerquellen
 
-Studierende waehlen oft pauschal die groesste Fensterlaenge, weil sie die beste Frequenzaufloesung liefert. Dabei wird die schlechtere Zeitaufloesung uebersehen. Umgekehrt wird bei transienten Signalen haeufig nur die Hop Size betrachtet, obwohl auch die Fensterlaenge selbst zeitliche Verschmierung verursacht. Bei iSTFT-Fragen wird zudem oft angenommen, dass jede STFT-Parametrierung automatisch perfekt rekonstruierbar ist.
+Studierende wählen oft pauschal die groesste Fensterlänge, weil sie die beste Frequenzaufloesung liefert. Dabei wird die schlechtere Zeitaufloesung übersehen. Umgekehrt wird bei transienten Signalen haeufig nur die Hop Size betrachtet, obwohl auch die Fensterlänge selbst zeitliche Verschmierung verursacht. Bei iSTFT-Fragen wird zudem oft angenommen, dass jede STFT-Parametrierung automatisch perfekt rekonstruierbar ist.
 
 ### Didaktischer Kommentar
 
-Die Aufgabe prueft Handlungskompetenz: Die Studierenden muessen Parameter nicht nur berechnen, sondern anwendungsbezogen bewerten. Sie erkennen, dass es keine universell beste STFT-Einstellung gibt, sondern eine Abwaegung zwischen Zeitaufloesung, Frequenzaufloesung, Datenmenge, Latenz und Rekonstruktionsqualitaet.
+Die Aufgabe prueft Handlungskompetenz: Die Studierenden müssen Parameter nicht nur berechnen, sondern anwendungsbezogen bewerten. Sie erkennen, dass es keine universell beste STFT-Einstellung gibt, sondern eine Abwaegung zwischen Zeitaufloesung, Frequenzaufloesung, Datenmenge, Latenz und Rekonstruktionsqualitaet.
 
 Geschaetzte Bearbeitungszeit: 25 Minuten  
 Schwierigkeitsgrad: anspruchsvoll
@@ -745,7 +745,7 @@ Schwierigkeitsgrad: anspruchsvoll
 
 1. 4 bis 5 Aufgaben vorhanden: Ja, es sind 5 Aufgaben.
 2. Mehrere Unteraufgaben pro Aufgabe: Ja.
-3. Diskrete Kreisfrequenz, STFT, Fensterlaenge, Hop Size und Ueberlappung enthalten: Ja.
+3. Diskrete Kreisfrequenz, STFT, Fensterlänge, Hop Size und Überlappung enthalten: Ja.
 4. Vorwaerts-Zeichenaufgabe und Rueckwaerts-Parameterbestimmung enthalten: Ja, Aufgabe 2 und Aufgabe 3.
 5. Praxisbezug zu Audio Engineering klar: Ja, Analyzer, Spektrogramm, Snare, Stimme/Gitarre, Netzbrummen, iSTFT.
 6. Notation und Einheiten konsistent: Ja, \(f_s\), \(N\), \(H\), \(m\), \(n_m\), \(t_m\), \(\Delta f\), \(\Omega_k\) werden einheitlich verwendet.

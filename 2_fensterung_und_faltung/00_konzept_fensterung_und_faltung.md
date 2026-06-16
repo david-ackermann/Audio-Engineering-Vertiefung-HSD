@@ -733,7 +733,7 @@ $$
 
 Beide Datensätze besitzen dieselbe interne Serie:
 
-- `08A_ir_ueberblick`
+- `08A_ir_überblick`
 - `08B` bis `08F`: Rechteckfenster mit $40/20/10/5/2\,\mathrm{ms}$
 - `08G` bis `08K`: Hammingfenster mit $40/20/10/5/2\,\mathrm{ms}$
 
@@ -786,7 +786,7 @@ Um die Vorlesung nicht schwerer wirken zu lassen als Vorlesung 1:
 
 ## Empfohlene Export- und Storyboard-Struktur
 
-- `01_uebergang_ft_zu_fensterung`
+- `01_übergang_ft_zu_fensterung`
 - `02_rechteckfenster_als_beobachtung`
 - `03_rechteck_zu_sinc`
 - `04_faltung_als_fensterkopien`
@@ -798,7 +798,7 @@ Um die Vorlesung nicht schwerer wirken zu lassen als Vorlesung 1:
 ### Interne Unterteilung für Block 4
 
 - `04A_formelkarte_und_zutaten`
-- `04B_faltung_als_ueberlappung`
+- `04B_faltung_als_überlappung`
 - `04C1_rampe_und_dirac`
 - `04C2_spektrum_und_spektrallinie`
 - `04D_cosinus_mit_zwei_linien`
@@ -817,11 +817,11 @@ Um die Vorlesung nicht schwerer wirken zu lassen als Vorlesung 1:
 ### Interne Unterteilung für Block 8
 
 - `08_hochtoener`
-  - `08A_ir_ueberblick`
+  - `08A_ir_überblick`
   - `08B` bis `08F` Rechteckfenster $40/20/10/5/2\,\mathrm{ms}$
   - `08G` bis `08K` Hammingfenster $40/20/10/5/2\,\mathrm{ms}$
 - `08_tieftöner`
-  - `08A_ir_ueberblick`
+  - `08A_ir_überblick`
   - `08B` bis `08F` Rechteckfenster $40/20/10/5/2\,\mathrm{ms}$
   - `08G` bis `08K` Hammingfenster $40/20/10/5/2\,\mathrm{ms}$
 
@@ -831,8 +831,8 @@ Um die Vorlesung nicht schwerer wirken zu lassen als Vorlesung 1:
 
 Die Bilder sollen gestalterisch direkt an `1_fourier_transformation` anschliessen:
 
-- grosse rote Blocküberschrift oben links
-- ruhiger weisser Hintergrund
+- große rote Blocküberschrift oben links
+- ruhiger weißer Hintergrund
 - linke Ankerkarte mit klarer Formel oder Kernaussage
 - Plotkarten mit Schlagschatten und klaren Achsen
 - möglichst wenige neue Elemente pro Folie
@@ -863,11 +863,11 @@ Der Storyboard-Stand ist jetzt für Block `01` bis `08` umgesetzt und konsistent
 
 Bereits umgesetzt sind:
 
-- `01_uebergang_ft_zu_fensterung`
+- `01_übergang_ft_zu_fensterung`
 - `02_rechteckfenster_als_beobachtung`
 - `03_rechteck_zu_sinc`
 - `04A_formelkarte_und_zutaten`
-- `04B_faltung_als_ueberlappung`
+- `04B_faltung_als_überlappung`
 - `04C1_rampe_und_dirac`
 - `04C2_spektrum_und_spektrallinie`
 - `04D_cosinus_mit_zwei_linien`

@@ -1,45 +1,45 @@
-# Konzept Vorlesung 5: Systeme, Faltung und H(z)
+# Konzept Vorlesung 5: Systeme, Faltung und Frequenzgang-Anschluss
 
 ## Ziel der Vorlesung
 
 Die Studierenden sollen am Ende verstehen:
 
 - was ein diskretes System aus einer Eingangsfolge $x[n]$ macht
-- warum die Impulsantwort $h[n]$ ein System vollstaendig beschreibt, wenn das System linear und zeitinvariant ist
+- warum die Impulsantwort $h[n]$ ein System vollständig beschreibt, wenn das System linear und zeitinvariant ist
 - wie die diskrete Faltung als Summe verschobener und gewichteter Impulsantworten gelesen wird
-- warum Delay $z^{-1}$ der elementare Speicherbaustein digitaler Systeme ist
-- wie aus einer Differenzengleichung eine kompakte Systembeschreibung entsteht
-- was $H(z) = Y(z) / X(z)$ als Lesesprache bedeutet, ohne schon tief in Pole und Nullstellen einzusteigen
+- dass Impulsantwort und Frequenzgang als zweite Systemsicht in Vorlesung 6 direkt nachgeholt werden
+- dass Delay, Speicher und Differenzengleichung danach der nächste konstruktive Schritt in Vorlesung 6 sind
 
 ## Didaktische Rolle im Gesamtaufbau
 
-Vorlesung 4 schliesst die Analyseperspektive ab: Ein Signal kann als Folge betrachtet, analysiert und wieder rekonstruiert werden. Vorlesung 5 wechselt die Frage:
+Vorlesung 4 schließt die Analyseperspektive ab: Ein Signal kann als Folge betrachtet, analysiert und wieder rekonstruiert werden. Vorlesung 5 wechselt die Frage:
 
 > Nicht mehr: Was steckt im Signal? Sondern: Was macht ein System mit dem Signal?
 
 Die fachliche Kette lautet:
 
 - ein System bildet $x[n]$ auf $y[n]$ ab
-- ein Impuls testet, wie das System auf einen einzelnen Sample-Anstoss reagiert
+- ein Impuls testet, wie das System auf einen einzelnen Sample-Anstoß reagiert
 - bei linearen zeitinvarianten Systemen reichen verschobene und gewichtete Impulsantworten aus
 - daraus entsteht die Faltung $y[n] = (x \ast h)[n]$
-- Delays machen Speicher im Zeitbereich sichtbar
-- Differenzengleichungen beschreiben Feedforward- und Feedback-Strukturen
-- $H(z)$ ist die kompakte Schreibweise dieser Struktur
+- der Frequenzgang beschreibt dieselbe Systemwirkung als komplexe Gewichtung von Frequenzanteilen und wird aus Zeitgründen in Vorlesung 6 als erster Fachblock nachgeholt
+- Delay, Speicher und FIR-Differenzengleichung werden danach in Vorlesung 6
+  als Fortsetzung eingefuehrt. IIR/Biquad folgt in Vorlesung 7; \(H(z)\)
+  beginnt erst in Vorlesung 8.
 
 ## Anschluss an Vorlesung 4
 
 Aus Vorlesung 4 nehmen die Studierenden mit:
 
 - $x[n]$ als diskrete Folge
-- lokale Analyse und Rekonstruktion aus vollstaendigen Koeffizienten
+- lokale Analyse und Rekonstruktion aus vollständigen Koeffizienten
 - Fensterung und Blockdenken als Beobachtungsoperation
 
-Vorlesung 5 verlaesst die Beobachtung und behandelt Wirkung:
+Vorlesung 5 verlässt die Beobachtung und behandelt Wirkung:
 
 - $h[n]$ ist nicht Beobachtungsfenster, sondern Systemantwort
 - Faltung ist nicht Fensterung, sondern Systemwirkung
-- $H(z)$ beschreibt nicht ein Spektrogramm, sondern das Verhalten eines Systems
+- der Frequenzgang beschreibt ein System, nicht ein Spektrogramm
 
 ## Mathematischer Kern
 
@@ -72,215 +72,267 @@ $$
 y[n] = (x \ast h)[n] = \sum_m x[m] h[n - m]
 $$
 
-Feedforward-System:
+Frequenzgang eines LTI-Systems:
 
 $$
-y[n] = \sum_{k=0}^{M} b_k x[n-k]
-$$
-
-Feedback-/IIR-System:
-
-$$
-y[n] = \sum_{k=0}^{M} b_k x[n-k] - \sum_{r=1}^{R} a_r y[n-r]
-$$
-
-Delay als z-Baustein:
-
-$$
-x[n-1] \leftrightarrow z^{-1}
-$$
-
-Systemfunktion:
-
-$$
-H(z) = Y(z) / X(z)
-$$
-
-Feedforward-Beispiel:
-
-$$
-H(z) = b_0 + b_1 z^{-1} + b_2 z^{-2} + \dots
-$$
-
-Feedback-Beispiel:
-
-$$
-H(z) =
-\frac{b_0 + b_1 z^{-1} + \dots + b_M z^{-M}}{1 + a_1 z^{-1} + \dots + a_R z^{-R}}
+H(e^{j\Omega}) = \sum_m h[m]e^{-j\Omega m}
 $$
 
 ## Didaktischer roter Faden
 
+0. Block 0: Audioeffekte als Klanglandkarte und Motivation für Systemtheorie
+00. Block 00: Allgemeiner Systembegriff, Eingang, Ausgang, Impuls und Impulsantwort
+0A. Block 0A: DAFX-Effekte nach Systemklassen sortieren
 1. Block 1: Systembegriff, Ein- und Ausgangsfolge, Impuls als Testsignal
-2. Block 2: Impulsantwort und diskrete Faltung als Ueberlagerung
-3. Block 3: Impulsantwort, Spektrum und Systemwirkung
-4. Block 4: Delay, Speicher und Differenzengleichung
-5. Block 5: Von der Differenzengleichung zu $H(z)$
-6. Block 6: Feedforward und Feedback als Ausblick auf Pole/Nullstellen
+2. Block 2: Impulsantwort und diskrete Faltung als Überlagerung
+3. Block 3: Impulsantwort, Spektrum und Systemwirkung (nicht mehr gehalten; verschoben nach Vorlesung 6, Block 1)
+
+## Block 0: Audioeffekte als Klanglandkarte
+
+### Kerngedanke
+
+> Bevor die Systemtheorie beginnt, bekommen die Studierenden eine hörbare Landkarte: Welche Audioeffekte gibt es, was verändern sie am Klang und welche Systemklassen stecken dahinter?
+
+Dieser Block darf in Ruhe 30 bis 40 Minuten einnehmen. Es ist kein Problem, wenn Vorlesung 5 dadurch weniger weit in Faltung oder Frequenzgang kommt. Die Orientierung ist hier wichtiger als Stoffdurchsatz, weil alle weiteren Vorlesungen davon profitieren.
+
+Didaktisch wichtig:
+
+- zuerst hören, dann ordnen, dann erst systemtheoretisch benennen
+- trockene und bearbeitete Signale direkt vergleichen
+- Effektgruppen nach Wahrnehmung sortieren, nicht sofort nach Formeln
+- Systemklassen nur als grobe Vorschau einführen: LTI, zeitvariant, pegelabhängig, nichtlinear, blockbasiert
+- die Brücke setzen: Wir starten danach mit der einfachsten und wichtigsten Klasse, den linearen zeitinvarianten Systemen
+
+Effektlandkarte nach DAFX, Abschnitt 1.2.2:
+
+| DAFX-Attribut | Wahrnehmungsfrage | Beispiele | Erste Systemidee |
+|---|---|---|---|
+| `L` Loudness | Wird das Signal lauter, leiser, dichter oder dynamisch kontrollierter? | compressor, limiter, expander, noise gate, gain/amplification, tremolo | Gain, Pegelmessung, Kennlinie, LFO |
+| `D` Duration and rhythm | Ändern sich Dauer, Tempo oder rhythmische Lage? | time-scaling, time inversion, rhythm/swing change | Blockverarbeitung, OLA, STFT |
+| `P` Pitch and harmony | Ändern sich Tonhöhe, Intonation oder Harmonie? | pitch-shifting, auto-tune, harmonizer | Resampling, Phase-Vocoder, Analyse/Resynthese |
+| `S` Spatial qualities | Ändern sich Ortung, Entfernung, Bewegung oder Raum? | echo, reverberation, panning, Doppler, rotary/Leslie | Delay, Impulsantwort, Faltung, HRTF |
+| `T` Timbre and quality | Ändern sich Klangfarbe, Helligkeit, Textur oder Qualität? | filter, equalizer, wah-wah, chorus, flanger, phaser, distortion, vocoding | Frequenzgang, Phase, Kennlinie, Spektralstruktur |
+| mehrere Hauptattribute | Ändern sich mehrere Wahrnehmungsdimensionen gleichzeitig? | resampling, ring modulation, robotization, spectral tremolo, vibrato | kombinierte oder blockbasierte Verarbeitung |
+
+Mögliche Hördramaturgie:
+
+1. trockenes Signal
+2. EQ/Filter
+3. Delay oder Echo
+4. Reverb oder Faltungshall
+5. Chorus/Flanger/Phaser
+6. Compressor
+7. Distortion/Saturation
+
+Systemklassen als Brücke zur Theorie:
+
+| Systemklasse | Beispiele aus der DAFX-Landkarte | Erste technische Sprache |
+|---|---|---|
+| lineare zeitinvariante Systeme | filter, equalizer, echo mit festen Parametern, reverberation über feste Impulsantwort, comb filter | Systemblock, Impulsantwort, Faltung, Frequenzgang |
+| zeitvariante lineare Systeme | tremolo, chorus, flanger, phaser, vibrato, rotary/Leslie | zeitabhängiger Gain, bewegtes Delay, LFO |
+| nichtlineare Systeme | distortion, fuzz, overdrive, compressor, limiter, expander, noise gate | Kennlinie, Pegelabhängigkeit, Obertöne |
+
+Blockbasierte Effekte wie time-scaling, pitch-shifting und Phase-Vocoder-Effekte werden als spätere Erweiterung angekündigt, aber nicht vor den LTI-Grundlagen ausgebaut.
+
+Zielsatz für den Übergang:
+
+> Viele Audioeffekte sehen zuerst sehr verschieden aus. Systemtheorie liefert die Sprache, um ihre gemeinsamen Bausteine zu erkennen. Wir beginnen mit Systemen, die über Impulsantwort, Faltung und Frequenzgang beschrieben werden können.
+
+## Block 00: Allgemeiner Systembegriff
+
+### Kerngedanke
+
+> Ein System ist eine Abbildung von $x[n]$ nach $y[n]$. Die Impulsantwort zeigt, was das System aus einem einzelnen Sample-Anstoß macht.
+
+Dieser Block steht zwischen der Audioeffekt-Landkarte und der Einteilung in Systemklassen. Die Studierenden sollen zuerst die gemeinsame Grundsprache sehen, bevor zwischen LTI, LTV, NTI und NTV unterschieden wird.
+
+Didaktisch wichtig:
+
+- Eingang und Ausgang zuerst als diskrete Folgen zeigen
+- den diskreten Impuls als einfachstes Testsignal einführen
+- die Impulsantwort als Antwort auf genau diesen einzelnen Sample-Anstoß lesen
+- noch nicht behaupten, dass die Impulsantwort jedes System vollständig beschreibt
+- den Merksatz vorbereiten: Eine Impulsantwort kann man bei vielen Systemen messen, aber nur bei LTI-Systemen beschreibt eine einzige Impulsantwort das System vollständig
+
+Geplante Storyboards:
+
+- einfache Eingangsfolge $x[n]$
+- dazugehörige Ausgangsfolge $y[n]$
+- diskreter Impuls $\delta[n]$
+- Impulsantwort $h[n]$
+- ideales Betragsspektrum des diskreten Impulses als DFT-Bin-Folge
+- Phase des diskreten Impulses als DFT-Bin-Folge
+- Gruppenlaufzeit des diskreten Impulses als DFT-Bin-Folge
+- Tiefpass-Impulsantwort in Abb. 8 didaktisch pegelangehoben wie im Faltungsblock; die Rechen-IR bleibt normalisiert. Einseitige Tiefpass-Darstellung bis Nyquist: bei $N=16$ nur $k=0,\dots,8$; die zweite DFT-Hälfte wäre für reelle $h[n]$ die gespiegelte Fortsetzung
+
+## Block 1B: Systemklassen als technische Blockdiagramme
+
+### Kerngedanke
+
+> Nach der DAFX-Wahrnehmungslandkarte brauchen die Studierenden eine zweite, technische Sortierung: LTI, LTV und NLS. Diese Sortierung erklärt, warum wir zuerst mit LTI-Systemen beginnen.
+
+Didaktisch wichtig:
+
+- `LTI`: linear und zeitinvariant, daher über Impulsantwort, Faltung und Frequenzgang beschreibbar
+- `LTV`: linear, aber zeitabhängig; Parameter wie Gain oder Delay bewegen sich in der Zeit
+- `NLS`: nichtlinear; Kennlinien und Pegelabhängigkeiten können neue Frequenzanteile erzeugen
+- zuerst die drei Systemklassen als technische Signalflussbilder zeigen, danach konkrete Effekte wieder einsortieren
+
+Geplante Storyboards:
+
+- NLS-Beispiel: Sinusfolge, geclippte Folge und idealisierte Obertöne
+- LTV-Beispiel: einfache LFO-Gainfolge $g[n]$ für Tremolo
+- nichtlinear-zeitvariantes Beispiel: Sidechain-Kompressor mit $s[n]$, $e_s[n]$ und $g_s[n]$
 
 ## Block 1: Systembegriff und Impulsantwort
 
 ### Kerngedanke
 
-> Ein System ist eine Abbildung von $x[n]$ nach $y[n]$. Die Impulsantwort zeigt, was das System aus einem einzelnen Sample-Anstoss macht.
+> Ein System ist eine Abbildung von $x[n]$ nach $y[n]$. Die Impulsantwort zeigt, was das System aus einem einzelnen Sample-Anstoß macht.
 
 Didaktisch wichtig:
 
 - zuerst mit Folgen und nicht mit Formeln beginnen
 - $\delta[n]$ als digitales Klicksignal verstehen
 - $h[n]$ als messbare Antwort des Systems lesen
-- LTI nur so weit einfuehren, wie es fuer Faltung gebraucht wird
+- LTI nur so weit einführen, wie es für Faltung gebraucht wird
 
 Geplante Storyboards:
 
 - Eingang $x[n]$, Systemblock, Ausgang $y[n]$
 - diskreter Impuls $\delta[n]$
 - kurze Impulsantworten: Direktpfad, Echo, gedämpfte Antwort
+- LTI-Prinzip: ein Sample startet eine verschobene und gewichtete Kopie von $h[n]$
 
 ## Block 2: Diskrete Faltung
 
 ### Kerngedanke
 
-> Jedes Sample von $x[n]$ startet eine verschobene und skalierte Kopie von $h[n]$. Die Summe aller Kopien ist $y[n]$.
+> Der Dirac zeigt zuerst die Mechanik der diskreten Faltung: Flip, Verschiebung, Produkt und Summe. Die Benennung als Impulsantwort $h[n]$ folgt erst danach.
 
 Didaktisch wichtig:
 
 - Faltung als Aufbauprozess zeigen, nicht nur als fertige Summe
 - erst wenige Samples, dann die allgemeine Formel
 - Zeitverschiebung und Gewichtung sichtbar machen
-- Vorzeichenkonvention in $h[n-m]$ nicht ueberbetonen, sondern ueber verschobene Kopien motivieren
+- Vorzeichenkonvention in $x[n-m]$ beziehungsweise $\delta[n-m]$ nicht überbetonen, sondern über verschobene Folgen motivieren
 
 Geplante Storyboards:
 
-- einzelne gewichtete Impulsantworten
-- schrittweise Summation
-- fertiges Ausgangssignal
-- Vergleich kurze IR gegen lange IR
+- Einstieg nur mit dem Dirac $\delta[n]$, noch ohne Benennung als Impulsantwort $h[n]$
+- einfache Eingangsfolge $x[n]$ mit positiven und negativen Samples
+- Hilfsindex $m$: oben zuerst festes $\delta[m]$ und $x[m]$
+- Flip-Schritt: $x[m]$ wird zu $x[-m]$
+- Verschiebeschritt: $x[-m]$ wird zu $x[n-m]$
+- unten baut sich $x[n] = \sum_m \delta[m]x[n-m]$ sampleweise als Bildreihe und GIF auf
+- fertiges Signal $x[n]\ast\delta[n]=x[n]$
+- zweite Unterserie zur Kommutativität: $x[m]$ bleibt fest, der Dirac wird geflippt und als $\delta[n-m]$ verschoben
+- beide Unterserien rekonstruieren die gleiche Folge $x[n]$
+- danach in `2C`: Übergang vom Dirac zur konkreten nichtlinearphasigen Tiefpass-Impulsantwort $h[n]$ bei gleicher Eingangsfolge $x[n]$
+- danach in `2D`: LTI-Lesart über Impulsantwort-Kopien; jedes Sample $x[m]$ startet eine verschobene und skalierte Kopie $x[m]h[n-m]$, deren Summe $y[n]$ ergibt
 
-## Block 3: Impulsantwort und Frequenzgang
+## Verschobener Block 3: Impulsantwort und Frequenzgang
 
 ### Kerngedanke
 
 > Dieselbe Systemwirkung kann im Zeitbereich als Faltung und im Frequenzbereich als Gewichtung gelesen werden.
 
+Dieser Block war für Vorlesung 5 geplant, wurde aber aus Zeitgründen nicht vorgestellt. Er wird in Vorlesung 6 als Block 1 vollständig nachgeholt.
+
 Didaktisch wichtig:
 
-- an Vorlesung 1 bis 4 anschliessen: Zeitfolge und Spektrum sind zwei Sichten
+- an Vorlesung 1 bis 4 anschließen: Zeitfolge und Spektrum sind zwei Sichten
 - $h[n]$ hat ein Spektrum, das die Wirkung auf Sinusanteile beschreibt
-- hier nur die Frequenzgang-Idee vorbereiten, die genaue Einheitskreis-Auswertung kommt in Vorlesung 6
+- $H(e^{j\Omega})$ ist die allgemeine, von der Beobachtungslänge unabhängige Systembeschreibung
+- $H_N[k]=H(e^{j2\pi k/N})$ ist nur die Abtastung dieser Systemantwort auf dem DFT-Raster der Länge $N$
+- die Impulsantwort $h[n]$ wird nicht an das Eingangssignal angepasst; dieselbe Systemantwort wird nur auf einem passenden Frequenzraster ausgewertet
+- im Frequenzbereich wirkt das LTI-System als binweise Gewichtung: $Y_N[k]=H_N[k]X_N[k]$
+- bei DFT-Rechnung entsteht zunächst zirkuläre Faltung; für lineare Faltung muss ausreichend aufgefüllt werden: $N\geq N_x+N_h-1$
 
 Geplante Storyboards:
 
-- Impulsantwort oben, Betragsspektrum unten
-- Eingangsspektrum, Systemwirkung, Ausgangsspektrum
-- einfache Beispiele: Tiefpass-artige, Hochpass-artige und Echo-artige Impulsantwort
+- `3A`: derselbe Tiefpass $h[n]$ wird mit verschiedenen DFT-Längen dargestellt; die Systemantwort bleibt gleich, nur das Frequenzraster wird feiner
+- `3A`: Spektren zuerst nur als DFT-Stützstellen zeigen, danach die gemeinsame Hüllkurve $H(e^{j\Omega})$ ergänzen
+- `3B`: periodisches Rechtecksignal $x[n]$ von $-1$ bis $+1$, dessen Spektrum $X_N[k]$ durch $H_N[k]$ gewichtet wird
+- `3B`: im Ausgangsspektrum $Y_N[k]$ zuerst $X_N[k]$ grau zeigen, dann $Y_N[k]$ blau darüber; im Zeitbereich zuerst $x[n]$ grau, dann $y[n]$ blau darüber
+- `3B`: längere Beobachtung mit größerem $N$ zeigen; altes $H[k]$ passt nicht mehr binweise, daher muss $H_N[k]$ für das neue Raster neu ausgewertet werden
+- Systemantworten $h[n]$, $H[k]$ und $H(e^{j\Omega})$ werden konsistent grün dargestellt; Eingang schwarz/grau, Ausgang blau
 
-## Block 4: Delay, Speicher und Differenzengleichung
+## Anschlussblock für Vorlesung 6
 
 ### Kerngedanke
 
-> Digitales Systemverhalten entsteht aus Addition, Multiplikation und Delay.
+> Wenn Impulsantwort und Faltung klar sind, wird zuerst die Frequenzsicht ergänzt. Danach kann das System als konkrete DSP-Struktur gebaut werden: aus Delay, Multiplikation und Addition.
 
-Didaktisch wichtig:
+Dieser Inhalt wird bewusst nicht mehr in Vorlesung 5 vertieft. Vorlesung 6
+startet mit dem verschobenen Frequenzgang-Block und fuehrt danach zu Delay,
+Speicher und Feedforward/FIR-Differenzengleichungen. Feedback/IIR und Biquad
+folgen in Vorlesung 7; \(H(z)\) folgt erst in Vorlesung 8.
 
-- $x[n-1]$ als ein Sample Speicher zeigen
-- Blockdiagramm und Gleichung parallel aufbauen
-- Feedforward vor Feedback
-- Feedback noch ohne Stabilitaetsdiskussion einfuehren
+Anschlussfragen:
 
-Geplante Storyboards:
+- Wie speichert ein digitales System vergangene Samples?
+- Warum ist $x[n-1]$ nicht nur eine Verschiebung, sondern ein Speicherbaustein?
+- Wie entstehen aus Delays, Gains und Summen einfache Audioeffekte wie Echo, Comb-Filter und Feedback-Echo?
+- Wie liest man aus einem Blockdiagramm eine Differenzengleichung?
 
-- ein Sample Delay
-- Feedforward-Delay $y[n] = x[n] + g x[n-M]$
-- Feedback-Delay $y[n] = x[n] + g y[n-M]$
-- Differenzengleichung als Ablesung aus dem Blockdiagramm
-
-## Block 5: H(z) als Systemsprache
-
-### Kerngedanke
-
-> $H(z)$ ist eine kompakte Schreibweise fuer Delay-Strukturen.
-
-Didaktisch wichtig:
-
-- $z^{-1}$ direkt an $x[n-1]$ koppeln
-- Zaehler als Feedforward-Anteil lesen
-- Nenner als Feedback-Anteil lesen
-- noch keine ausfuehrliche Pol-Nullstellen-Analyse; diese gehoert in Vorlesung 6
-
-Geplante Storyboards:
-
-- Differenzengleichung links, $H(z)$ rechts
-- FIR-Beispiel nur mit Zaehler
-- IIR-Beispiel mit Zaehler und Nenner
-- Strukturdiagramm und Formel gegeneinander markieren
-
-## Block 6: Feedforward und Feedback als Ausblick
-
-### Kerngedanke
-
-> Feedforward verteilt Energie endlich in der Zeit. Feedback kann Energie wieder in das System zurueckfuehren.
-
-Didaktisch wichtig:
-
-- FIR/IIR begrifflich vorbereiten, aber noch nicht vollstaendig behandeln
-- Stabilitaet als offene Frage fuer Vorlesung 6 formulieren
-- Pole und Nullstellen nur als naechste Leseschicht von $H(z)$ ankündigen
-
-Geplante Storyboards:
-
-- endliche Impulsantwort bei Feedforward
-- ausklingende Antwort bei Feedback
-- gleiche Delaystruktur mit verschiedenen $g$
-- Abschlussfolie: von $H(z)$ zum Einheitskreis in Vorlesung 6
-
-## Zeitplan fuer 120 Minuten
+## Zeitplan für 120 Minuten
 
 | Zeit | Abschnitt | Inhalt | mathematischer Fokus | didaktische Funktion |
 |---|---|---|---|---|
-| 0-8 min | Rueckbezug | Von Analyse/Rekonstruktion zur Systemwirkung | $x[n] \to y[n]$ | Perspektivwechsel setzen |
-| 8-25 min | Block 1 | Systembegriff, Impuls, Impulsantwort | $h[n] = \mathcal{T}\{\delta[n]\}$ | Systemantwort anschaulich machen |
-| 25-48 min | Block 2 | Faltung als Summe verschobener Impulsantworten | $y[n] = \sum_m x[m] h[n-m]$ | Faltung mechanisch verstehen |
-| 48-60 min | Block 3 | Impulsantwort und Frequenzgang | Zeitbereich/Frequenzbereich | bekannte Spektralsicht anbinden |
+| 0-5 min | Orga | Ablauf, Material, kurze Einordnung | - | Ankommen |
+| 5-15 min | Wiederholung | Von DFT/STFT/iSTFT zur Frage nach Systemwirkung | $x[n] \to y[n]$ | Vorwissen aktivieren |
+| 15-35 min | Block 0 | DAFX-Wahrnehmungslandkarte: `L`, `D`, `P`, `S`, `T`, mehrere Attribute | Wahrnehmungsattribute | Motivation und gemeinsame Sprache |
+| 35-45 min | Block 00 | Allgemeiner Systembegriff, Impuls und Impulsantwort | $x[n] \to y[n]$, $\delta[n]$, $h[n]$ | gemeinsame technische Grundsprache |
+| 45-60 min | Block 0A | DAFX-Effekte nach Systemklasse sortieren | LTI, LTV, NTI, NTV | Brücke zur Systemtheorie |
 | 60-68 min | Pause | kurze Unterbrechung | - | Entlastung |
-| 68-88 min | Block 4 | Delay, Speicher und Differenzengleichung | $x[n-1]$, $y[n-r]$ | Systemstruktur aus Grundbausteinen lesen |
-| 88-108 min | Block 5 | Von der Gleichung zu $H(z)$ | $H(z)=Y(z)/X(z)$ | kompakte Systemsprache aufbauen |
-| 108-118 min | Block 6 | Feedforward/Feedback, Ausblick Pole/Nullstellen | Zaehler/Nenner | Vorlesung 6 vorbereiten |
-| 118-120 min | Abschluss | drei Merksaetze | Faltung, Delay, $H(z)$ | Verdichten |
+| 68-85 min | Block 1 | Systembegriff, Impuls, Impulsantwort | $h[n] = \mathcal{T}\{\delta[n]\}$ | Systemantwort anschaulich machen |
+| 85-105 min | Block 2 | Faltung als Summe verschobener Impulsantworten | $y[n] = \sum_m x[m] h[n-m]$ | Faltung mechanisch verstehen |
+| 105-116 min | Sicherung | Faltung als Systemwirkung, offene Frequenzsicht | $y[n] = \sum_m x[m] h[n-m]$ | tatsächlich erreichten Stand sichern |
+| 116-120 min | Abschluss | Was nehmen wir mit? Effektlandkarte, LTI, Impulsantwort, Faltung | wenige Merksätze | Block 3 für Vorlesung 6 ankündigen |
 
-## Typische Verstaendnishuerden
+Alternative bei mehr Diskussion im Effektblock:
+
+- Block 0 bis 55 Minuten laufen lassen.
+- Danach nur Block 1 sauber abschließen.
+- Faltung als Hauptthema in die nächste Sitzung ziehen.
+
+## Typische Verständnishürden
 
 - Faltung wird als abstrakte Rechenvorschrift statt als Systemwirkung verstanden.
 - Impulsantwort und Fensterfunktion werden verwechselt.
 - $h[n]$ wird als Eingangssignal statt als Systemeigenschaft gelesen.
-- Delay wird als reine Zeitverschiebung, aber nicht als Speicherbaustein verstanden.
-- Differenzengleichung und Blockdiagramm werden getrennt gelernt.
-- $z^{-1}$ wirkt wie eine neue Achse statt wie eine Schreibweise fuer ein Sample Delay.
-- $H(z)$ wird zu frueh mit Pol-Nullstellen-Geometrie ueberladen.
+- Frequenzgang wird als Spektrum eines Signals statt als Systemeigenschaft gelesen.
+- Phase und Gruppenlaufzeit werden von der Betragswirkung getrennt betrachtet.
+- Delay, Differenzengleichung und \(H(z)\) werden zu frueh vermischt; \(H(z)\)
+  gehoert erst in Vorlesung 8.
 
-## Demo-, Hoer- und Python-Einsatz
+## Demo-, Hör- und Python-Einsatz
 
+- Systembegriff: Eingangsfolge, Ausgangsfolge, diskreter Impuls, Impulsantwort, ideales Impulsspektrum, Phase und Gruppenlaufzeit
+- Systemklassenbeispiele: geclippte Sinusfolge, LFO-Gainfolge und Sidechain-Kompressor-Gainfolge
+- diskrete Faltung mit dem Dirac $\delta[m]$: `2A` verschiebt $x[n-m]$, `2B` verschiebt $\delta[n-m]$; beide GIFs zeigen dieselbe Ausgangsfolge $y[n]$
+- diskrete Faltung mit einer nichtlinearphasigen Tiefpass-Impulsantwort: `2C` nutzt dieselbe Eingangsfolge und zeigt, wie $y[n]=\sum_m h[m]x[n-m]$ sampleweise entsteht
+- Aufbau der Faltung als Überlagerung: `2D` zeigt die einzelnen Kopien $x[m]h[n-m]$ und ihre Summe $y[n]$
 - Klick oder Clap durch kurze Raum-IR
 - trockener Impuls gegen Echo und Raumantwort
 - direkte Faltung einer kurzen Folge mit einer kurzen Impulsantwort
 - Audiobeispiel: trockenes Signal durch kurze IR falten
-- Feedforward- und Feedback-Delay als einfache Audioeffekte
-- Gleichung, Blockdiagramm und $H(z)$ fuer dasselbe System nebeneinander
+- Frequenzgang aus einer einfachen Impulsantwort lesen (verschoben nach Vorlesung 6, Block 1)
 
 ## Geplante Export- und Storyboard-Struktur
 
-- `01_systembegriff_und_impulsantwort`
+- `00`
+- `01B_systemklassen`
 - `02_diskrete_faltung`
 - `03_impulsantwort_und_frequenzgang`
-- `04_delay_speicher_differenzengleichung`
-- `05_hz_als_systemsprache`
-- `06_feedforward_feedback_ausblick`
 
 ## Anschluss an Vorlesung 6
 
-Vorlesung 5 endet mit $H(z)$ als algebraischer Systemsprache. Vorlesung 6 wertet diese Sprache geometrisch aus:
+Vorlesung 5 endet beim Aufbau der Faltung als LTI-Systemwirkung. Vorlesung 6 startet deshalb mit dem nachgeholten Frequenzgang-Block und geht danach in den nächsten konstruktiven Schritt:
 
-- $H(e^{j \Omega})$ als Auswertung auf dem Einheitskreis
-- Pole und Nullstellen als Leseschicht von $H(z)$
-- Stabilitaet ueber Pol-Lage
-- Minimum Phase als strukturelle Eigenschaft
+- Impulsantwort und Frequenzgang als zweite Systemsicht
+- Delay als elementarer Speicherbaustein
+- Feedforward- und Feedback-Strukturen als Audioeffekte
+- Differenzengleichungen als Baupläne digitaler Systeme
+- \(H(z)\) als kompakte Delay-Sprache erst in Vorlesung 8

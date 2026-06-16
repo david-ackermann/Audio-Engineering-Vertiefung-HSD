@@ -1,0 +1,126 @@
+desc:Simple 4-Stage Mono Allpass Phaser
+
+slider1:RATE_HZ=0.6<0.01,8,0.01>rate (Hz)
+slider2:F_CENTER=800<40,8000,1:sqr>f_AP center (Hz)
+slider3:DEPTH_OCT=1.5<0,4,0.01>depth (octaves)
+slider4:D_GAIN=0.5<0,1,0.01>d dry gain
+slider5:E_GAIN=0.5<0,1,0.01>e allpass gain
+slider6:FB=0.5<0,0.95,0.01>f_b feedback
+slider7:OUT_DB=0<-24,12,0.1>output (dB)
+
+in_pin:left input
+in_pin:right input
+out_pin:left output
+out_pin:right output
+
+@init
+phase = 0;
+
+ap_x1L = 0; ap_y1L = 0;
+ap_x2L = 0; ap_y2L = 0;
+ap_x3L = 0; ap_y3L = 0;
+ap_x4L = 0; ap_y4L = 0;
+
+ap_x1R = 0; ap_y1R = 0;
+ap_x2R = 0; ap_y2R = 0;
+ap_x3R = 0; ap_y3R = 0;
+ap_x4R = 0; ap_y4R = 0;
+
+fb_memL = 0;
+fb_memR = 0;
+
+smooth_ms = 10;
+smooth_a = exp(-1 / (0.001 * smooth_ms * srate));
+smooth_b = 1 - smooth_a;
+
+RATE_t = RATE_HZ;
+F_CENTER_t = F_CENTER;
+DEPTH_t = DEPTH_OCT;
+D_t = D_GAIN;
+E_t = E_GAIN;
+FB_t = FB;
+OUT_t = 10^(OUT_DB / 20);
+
+RATE_s = RATE_t;
+F_CENTER_s = F_CENTER_t;
+DEPTH_s = DEPTH_t;
+D_s = D_t;
+E_s = E_t;
+FB_s = FB_t;
+OUT_s = OUT_t;
+
+@slider
+RATE_t = min(max(RATE_HZ, 0.01), 8);
+F_CENTER_t = min(max(F_CENTER, 40), 8000);
+DEPTH_t = min(max(DEPTH_OCT, 0), 4);
+D_t = min(max(D_GAIN, 0), 1);
+E_t = min(max(E_GAIN, 0), 1);
+FB_t = min(max(FB, 0), 0.95);
+OUT_t = 10^(OUT_DB / 20);
+
+@sample
+RATE_s += (RATE_t - RATE_s) * smooth_b;
+F_CENTER_s += (F_CENTER_t - F_CENTER_s) * smooth_b;
+DEPTH_s += (DEPTH_t - DEPTH_s) * smooth_b;
+D_s += (D_t - D_s) * smooth_b;
+E_s += (E_t - E_s) * smooth_b;
+FB_s += (FB_t - FB_s) * smooth_b;
+OUT_s += (OUT_t - OUT_s) * smooth_b;
+
+lfo = sin(phase);
+phase += 2 * $pi * RATE_s / srate;
+phase >= 2 * $pi ? phase -= 2 * $pi;
+
+fmax = min(20000, srate * 0.45);
+fAP = F_CENTER_s * 2^(DEPTH_s * lfo);
+fAP = min(max(fAP, 20), fmax);
+
+g = tan($pi * fAP / srate);
+a = (1 - g) / (1 + g);
+
+inL = spl0 + FB_s * fb_memL;
+inR = spl1 + FB_s * fb_memR;
+
+y1L = a * (ap_y1L + inL) - ap_x1L;
+ap_x1L = inL;
+ap_y1L = y1L;
+
+y2L = a * (ap_y2L + y1L) - ap_x2L;
+ap_x2L = y1L;
+ap_y2L = y2L;
+
+y3L = a * (ap_y3L + y2L) - ap_x3L;
+ap_x3L = y2L;
+ap_y3L = y3L;
+
+y4L = a * (ap_y4L + y3L) - ap_x4L;
+ap_x4L = y3L;
+ap_y4L = y4L;
+
+apOutL = y4L;
+
+y1R = a * (ap_y1R + inR) - ap_x1R;
+ap_x1R = inR;
+ap_y1R = y1R;
+
+y2R = a * (ap_y2R + y1R) - ap_x2R;
+ap_x2R = y1R;
+ap_y2R = y2R;
+
+y3R = a * (ap_y3R + y2R) - ap_x3R;
+ap_x3R = y2R;
+ap_y3R = y3R;
+
+y4R = a * (ap_y4R + y3R) - ap_x4R;
+ap_x4R = y3R;
+ap_y4R = y4R;
+
+apOutR = y4R;
+
+fb_memL = apOutL;
+fb_memR = apOutR;
+
+fb_comp = 1 - abs(FB_s);
+
+spl0 = (D_s * spl0 + E_s * fb_comp * apOutL) * OUT_s;
+spl1 = (D_s * spl1 + E_s * fb_comp * apOutR) * OUT_s;
